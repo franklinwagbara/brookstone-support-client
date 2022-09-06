@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.card {
+  @apply w-72 rounded-lg bg-primary_light h-44 shadow-card_shadow text-background cursor-pointer p-3 flex justify-between;
+}
+
+.basic_info {
+  @apply w-full bg-secondary p-4 rounded-md leading-7 mb-3 text-primary;
+}
