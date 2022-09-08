@@ -7,5 +7,13 @@
 }
 
 .basic_info {
-  @apply w-full bg-secondary p-4 rounded-md leading-7 mb-3 text-primary;
+  @apply w-full bg-secondary p-4 rounded-md leading-7 mb-3 text-primary shadow-card_shadow;
+}
+
+.table-td {
+  @apply py-2 text-center border border-slate-300;
+}
+
+.table-th {
+  @apply px-5 py-2 border border-slate-300;
 }

@@ -10,7 +10,6 @@ interface HeaderProps {
 }
 const Header = ({children}: HeaderProps) => {
   const currentUser = useAppSelector(state => state.auth.currentUser);
-  const copy = {...currentUser};
   const navigate = useNavigate();
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
@@ -25,8 +24,6 @@ const Header = ({children}: HeaderProps) => {
     await logout();
     dispatch(setCurrentUser(null));
   };
-
-  console.log('header re-rendering...', currentUser);
 
   return (
     <div className="relative bg-primary z-50 shadow-header_shadow p-2 flex justify-between items-center md:px-20 text-background">
@@ -60,7 +57,6 @@ interface NavItemProps {
   children?: ReactNode;
 }
 export const NavItem = ({content, children}: NavItemProps) => {
-  console.log('Navitem re-rendering...', content, children);
   return (
     <div className="cursor-pointer">
       {content}

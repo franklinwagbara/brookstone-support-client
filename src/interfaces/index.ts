@@ -7,6 +7,7 @@ import {IClassroom} from './IClassroom';
 import {IEnrollment} from './IEnrollment';
 import {ITranscript} from './ITranscript';
 import {IYearGroup} from './IYearGroup';
+import {IClasses} from './IClasses';
 
 export type {
   IUser,
@@ -18,4 +19,5 @@ export type {
   IEnrollment,
   ITranscript,
   IYearGroup,
+  IClasses,
 };

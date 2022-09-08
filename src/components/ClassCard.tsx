@@ -11,6 +11,7 @@ interface CardProps {
   total?: string;
   onClick?: () => void;
 }
+
 export const ClassCard = ({
   id,
   class_name,

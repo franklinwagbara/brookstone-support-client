@@ -1,4 +1,4 @@
-import {TextField, Typography, Button} from '@mui/material';
+import {TextField, Typography, Button, CircularProgress} from '@mui/material';
 import {useEffect, useState} from 'react';
 import logo from '../assets/images/logo.png';
 import {IUser} from '../interfaces';
@@ -15,7 +15,8 @@ const Login = () => {
   const currentUser = useAppSelector(state => state.auth.currentUser);
 
   const dispatch = useAppDispatch();
-  const [login, {isLoading, error, isError, isSuccess}] = useLoginMutation();
+  const [login, {isLoading: isLoadingLogin, error, isError, isSuccess}] =
+    useLoginMutation();
   const [fetchCurrentUser, fcuResults] = useFetchCurrentUserMutation();
   const navigate = useNavigate();
 
@@ -46,6 +47,13 @@ const Login = () => {
       console.error(error);
     }
   };
+
+  if (isLoadingLogin)
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+        <CircularProgress size={200} color="secondary" />
+      </div>
+    );
 
   return (
     <div className="h-3/4 flex items-center justify-center divide-x divide-solid gap-6">

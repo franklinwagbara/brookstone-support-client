@@ -13,6 +13,7 @@ export const enrollmentApiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
   }),
+  tagTypes: ['Enrollment'],
   endpoints(builder) {
     return {
       fetchEnrollments: builder.query<
@@ -20,23 +21,25 @@ export const enrollmentApiSlice = createApi({
         IEnrollmentRequestParams
       >({
         query({user_id, session_id}) {
-          console.log('in side fetch', user_id, session_id);
           return {
             url: `/enrollment?teacher=${user_id}&session=${session_id}`,
             method: 'GET',
             credentials: 'include',
           };
         },
+        providesTags: ['Enrollment'],
       }),
 
       postEnrollment: builder.mutation<IResult<IEnrollment>, IEnrollment>({
-        query(session) {
+        query(enrollment) {
           return {
             url: '/session',
-            method: 'GET',
+            method: 'POST',
+            body: enrollment,
             credentials: 'include',
           };
         },
+        invalidatesTags: ['Enrollment'],
       }),
     };
   },

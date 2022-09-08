@@ -1,19 +1,13 @@
 import {Navigate, Route, Routes} from 'react-router-dom';
 import './App.css';
 import {useAppSelector} from './app/hooks';
-import {
-  Assessment,
-  AssignedClasses,
-  Header,
-  Login,
-  ProtectedRoutes,
-} from './components';
+import {Assessment, AssignedClasses, Header, Login} from './components';
 import {NavItem, NavItems} from './components/Header';
-import {Dashboard} from './pages';
+import {AdminDashboard, Dashboard} from './pages';
+import {ManageUsers} from './pages/admin/ManageUsers';
 
 function App() {
   const currentUser = useAppSelector(state => state.auth.currentUser);
-  console.log('current user in app', currentUser);
   return (
     <div className="w-full min-w-fit h-full min-h-screen">
       <Header>
@@ -25,7 +19,12 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="dashboard" element={<Dashboard />}>
           <Route path="assignedclasses" element={<AssignedClasses />} />
-          <Route path="assessment/:id" element={<Assessment />} />
+          <Route
+            path="assessment/:class_id/:subject_id"
+            element={<Assessment />}
+          />
+          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="users" element={<ManageUsers />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

@@ -1,3 +1,5 @@
-import {Dashboard} from './Dashboard';
+import {Dashboard} from './dashboard/Dashboard';
+import {AdminDashboard} from './admin/AdminDashboard';
+import {ManageUsers} from './admin/ManageUsers';
 
-export {Dashboard};
+export {Dashboard, AdminDashboard, ManageUsers};

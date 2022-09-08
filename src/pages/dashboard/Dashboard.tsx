@@ -1,38 +1,45 @@
 import {ReactNode, useEffect} from 'react';
 import {Navigate, Outlet, useNavigate} from 'react-router-dom';
-import {NavItems} from '../components/Header';
-import {useAppSelector, useAppDispatch} from '../app/hooks';
-import {useFetchCurrentSessionQuery} from '../features/session/session_api_slice';
-import {setCurrentSession} from '../features/session/session_slice';
-import {setEnrollments} from '../features/enrollment/enrollment_slice';
-import {useFetchEnrollmentsQuery} from '../features/enrollment/enrollment_api_slice';
+import {NavItems} from '../../components/Header';
+import {useAppSelector, useAppDispatch} from '../../app/hooks';
+import {useFetchCurrentSessionQuery} from '../../features/session/session_api_slice';
+import {setCurrentSession} from '../../features/session/session_slice';
+import {setEnrollments} from '../../features/enrollment/enrollment_slice';
+import {useFetchEnrollmentsQuery} from '../../features/enrollment/enrollment_api_slice';
+import {CircularProgress} from '@mui/material';
 
 export const Dashboard = (): JSX.Element => {
   const currentUser = useAppSelector(state => state.auth.currentUser);
-  console.log('current user in dashboard', currentUser);
   const session = useAppSelector(state => state.session.currentSession);
   const navigate = useNavigate();
   const {data: session_data_response, isSuccess: sessionSuccess} =
     useFetchCurrentSessionQuery();
-  const {data: enrollment_data_response, isSuccess: enrollmentSuccess} =
-    useFetchEnrollmentsQuery(
-      {
-        user_id: currentUser?._id as string,
-        session_id: session?._id as string,
-      },
-      {skip: !sessionSuccess}
-    );
+  const {
+    data: enrollment_data_response,
+    isLoading: isLoadingEnrollment,
+    isSuccess: enrollmentSuccess,
+  } = useFetchEnrollmentsQuery(
+    {
+      user_id: currentUser?._id as string,
+      session_id: session?._id as string,
+    },
+    {skip: !sessionSuccess}
+  );
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setCurrentSession((session_data_response as any)?.data[0]));
     dispatch(setEnrollments((enrollment_data_response as any)?.data));
-    //if ((enrollment_data_response as any)?.data)
     navigate('/dashboard/assignedclasses');
   }, [session_data_response, enrollment_data_response]);
 
-  console.log('re-rendering dashboard', currentUser);
+  if (isLoadingEnrollment)
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+        <CircularProgress size={200} color="secondary" />
+      </div>
+    );
 
   return (
     <div className="flex flex-row min-h-screen">
@@ -54,10 +61,15 @@ export const Dashboard = (): JSX.Element => {
             onClick={() => navigate('/dashboard/assessment')}
             content="Assessment"
           />
+          <SideNavItem
+            onClick={() => navigate('/dashboard/admin')}
+            content="Admin"
+          />
         </NavItems>
       </div>
-
-      {currentUser ? <Outlet /> : <Navigate to="/" />}
+      <div id="main" className="px-6 py-8 flex flex-col flex-1">
+        {currentUser ? <Outlet /> : <Navigate to="/" />}
+      </div>
     </div>
   );
 };

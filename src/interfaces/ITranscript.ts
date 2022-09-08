@@ -4,7 +4,19 @@ import {IStudent} from './IStudent';
 import {ISubject} from './ISubject';
 import {IUser} from './IUser';
 
-export interface ITranscript {
+interface ObjectKey {
+  [key: string]:
+    | string
+    | IStudent
+    | ISubject
+    | ISession
+    | IClassroom
+    | IUser
+    | number
+    | undefined;
+}
+
+export interface ITranscript extends ObjectKey {
   _id?: string;
   student: IStudent;
   subject: ISubject;
@@ -15,8 +27,9 @@ export interface ITranscript {
   week_2?: number;
   week_3?: number;
   week_4?: number;
-  half_term_exam?: number;
   ca_1?: number;
+  half_term_exam?: number;
+  ccm?: number;
   week_5?: number;
   week_6?: number;
   week_7?: number;
