@@ -8,6 +8,8 @@ import {IEnrollment} from './IEnrollment';
 import {ITranscript} from './ITranscript';
 import {IYearGroup} from './IYearGroup';
 import {IClasses} from './IClasses';
+import {IClassroomEnrollment} from './IClassroomEnrollment';
+import {IBehaviour} from './IBehaviour';
 
 export type {
   IUser,
@@ -20,4 +22,6 @@ export type {
   ITranscript,
   IYearGroup,
   IClasses,
+  IClassroomEnrollment,
+  IBehaviour,
 };

@@ -1,14 +1,35 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {IResult, ITranscript} from '../../interfaces';
 import _ from 'lodash';
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import {ITranscript, IResult} from '../../interfaces';
+import {IRequestParams} from '../../interfaces/IRequestParams';
+import {generateQueryStringFromObject} from '../../utils';
 
 export const baseUrl = 'http://localhost:5000/api/';
 
-interface ITranscriptFetchRequest {
-  session: string;
-  subject: string;
-  teacher: string;
-  classroom: string;
+export interface ITranscriptRequest extends IRequestParams {
+  _id?: string;
+  teacher?: string;
+  student?: string;
+  subject?: string;
+  session?: string;
+  classroom?: string;
+  week_1?: string;
+  week_2?: string;
+  week_3?: string;
+  week_4?: string;
+  ca_1?: string;
+  half_term_exam?: string;
+  ccm?: string;
+  week_5?: string;
+  week_6?: string;
+  week_7?: string;
+  week_8?: string;
+  ca_2?: string;
+  final_exam?: string;
+  total?: string;
+  grade?: string;
+  gpa?: string;
+  comment?: string;
 }
 
 export const transcriptApiSlice = createApi({
@@ -19,34 +40,53 @@ export const transcriptApiSlice = createApi({
   tagTypes: ['Transcript'],
   endpoints(builder) {
     return {
-      fetchTranscript: builder.query<
-        IResult<ITranscript[]>,
-        ITranscriptFetchRequest
-      >({
+      fetchTranscripts: builder.query<IResult<ITranscript>, ITranscriptRequest>(
+        {
+          query(arg) {
+            const queryString = generateQueryStringFromObject(arg);
+            return {
+              url: `/transcript${queryString}`,
+              method: 'GET',
+              credentials: 'include',
+            };
+          },
+          providesTags: ['Transcript'],
+        }
+      ),
+
+      fetchTranscript: builder.query<IResult<ITranscript>, ITranscriptRequest>({
         query(arg) {
           return {
-            url: `/transcript?session=${arg.session}&teacher=${arg.teacher}&subject=${arg.subject}&classroom=${arg.classroom}`,
+            url: `/transcript/${arg._id}`,
             method: 'GET',
             credentials: 'include',
           };
         },
         providesTags: ['Transcript'],
       }),
-      updateTranscript: builder.mutation<IResult<ITranscript>, ITranscript>({
+
+      addTranscript: builder.mutation<IResult<ITranscript>, ITranscript>({
         query(transcript) {
-          console.log('updating transcript....', transcript);
-          const body = {
-            ...transcript,
-            classroom: transcript.classroom._id,
-            session: transcript.session._id,
-            student: transcript.student._id,
-            subject: transcript.subject._id,
-            teacher: transcript.teacher._id,
-          };
           return {
-            url: `/transcript/${transcript._id}`,
+            url: '/transcript',
+            method: 'POST',
+            body: transcript,
+            credentials: 'include',
+          };
+        },
+        invalidatesTags: ['Transcript'],
+      }),
+
+      updateTranscript: builder.mutation<
+        IResult<ITranscript>,
+        ITranscriptRequest
+      >({
+        query(arg) {
+          console.log('arugue', arg);
+          return {
+            url: `/transcript/${arg._id}`,
             method: 'PUT',
-            body: _.pick(body, [
+            body: _.pick(arg, [
               'student',
               'subject',
               'session',
@@ -75,9 +115,28 @@ export const transcriptApiSlice = createApi({
         },
         invalidatesTags: ['Transcript'],
       }),
+
+      deleteTranscript: builder.mutation<
+        IResult<ITranscript>,
+        ITranscriptRequest
+      >({
+        query(arg) {
+          return {
+            url: `/transcript/${arg._id}`,
+            method: 'DELETE',
+            credentials: 'include',
+          };
+        },
+        invalidatesTags: ['Transcript'],
+      }),
     };
   },
 });
 
-export const {useFetchTranscriptQuery, useUpdateTranscriptMutation} =
-  transcriptApiSlice;
+export const {
+  useFetchTranscriptQuery,
+  useUpdateTranscriptMutation,
+  useAddTranscriptMutation,
+  useDeleteTranscriptMutation,
+  useFetchTranscriptsQuery,
+} = transcriptApiSlice;

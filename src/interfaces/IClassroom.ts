@@ -7,7 +7,7 @@ export interface IClassroom {
   _id: string;
   name: string;
   form_tutor: IUser;
-  students: IStudent[];
+  students?: IStudent[];
   session: ISession;
   year_group: IYearGroup;
   section?: 'junior' | 'senior' | 'ify';

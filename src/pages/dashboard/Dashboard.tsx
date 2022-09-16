@@ -1,3 +1,4 @@
+import {Alert} from '@mui/material';
 import {ReactNode, useEffect} from 'react';
 import {Navigate, Outlet, useNavigate} from 'react-router-dom';
 import {NavItems} from '../../components/Header';
@@ -7,8 +8,10 @@ import {setCurrentSession} from '../../features/session/session_slice';
 import {setEnrollments} from '../../features/enrollment/enrollment_slice';
 import {useFetchEnrollmentsQuery} from '../../features/enrollment/enrollment_api_slice';
 import {CircularProgress} from '@mui/material';
+import {setAlert} from '../../features/alert/alert-slice';
 
 export const Dashboard = (): JSX.Element => {
+  const alert = useAppSelector(state => state.alert);
   const currentUser = useAppSelector(state => state.auth.currentUser);
   const session = useAppSelector(state => state.session.currentSession);
   const navigate = useNavigate();
@@ -20,13 +23,17 @@ export const Dashboard = (): JSX.Element => {
     isSuccess: enrollmentSuccess,
   } = useFetchEnrollmentsQuery(
     {
-      user_id: currentUser?._id as string,
-      session_id: session?._id as string,
+      teacher: currentUser?._id as string,
+      session: session?._id as string,
     },
     {skip: !sessionSuccess}
   );
 
   const dispatch = useAppDispatch();
+
+  const handleShow = () => {
+    dispatch(setAlert({...alert, show: !alert.show}));
+  };
 
   useEffect(() => {
     dispatch(setCurrentSession((session_data_response as any)?.data[0]));
@@ -58,6 +65,10 @@ export const Dashboard = (): JSX.Element => {
             content="Classes"
           />
           <SideNavItem
+            onClick={() => navigate('/dashboard/assignedformrooms')}
+            content="Form Rooms"
+          />
+          <SideNavItem
             onClick={() => navigate('/dashboard/assessment')}
             content="Assessment"
           />
@@ -65,9 +76,19 @@ export const Dashboard = (): JSX.Element => {
             onClick={() => navigate('/dashboard/admin')}
             content="Admin"
           />
+          <SideNavItem
+            onClick={() => navigate('/dashboard/reports')}
+            content="Reports"
+          />
         </NavItems>
       </div>
       <div id="main" className="px-6 py-8 flex flex-col flex-1">
+        {alert.show && (
+          <Alert severity={alert.type} color={alert.type} onClose={handleShow}>
+            {alert.message}
+          </Alert>
+        )}
+
         {currentUser ? <Outlet /> : <Navigate to="/" />}
       </div>
     </div>
@@ -92,7 +113,7 @@ export const SideNavItem = ({
       onClick={onClick}
       className={`text-lg ${
         home ? 'bg-gray-600' : ''
-      } hover:bg-gray-700 border-b-2 hover:cursor-pointer px-16 py-2 my-4 rounded-full`}
+      } hover:bg-gray-700 border-b-2 hover:cursor-pointer px-16 py-2 my-4 rounded-full whitespace-nowrap`}
     >
       {content ?? children}
     </div>

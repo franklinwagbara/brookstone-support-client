@@ -8,16 +8,16 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import {ReactNode, useEffect, useState} from 'react';
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {useEffect, useState} from 'react';
+import {useAppDispatch, useAppSelector} from '../../../../app/hooks';
 import {
   IUserRequest,
   useDeleteUserMutation,
   useFetchUsersQuery,
   useUpdateUserMutation,
-} from '../../../features/user/user_api_slice';
-import {setUsers} from '../../../features/user/user_slice';
-import {IUser} from '../../../interfaces';
+} from '../../../../features/user/user_api_slice';
+import {setUsers} from '../../../../features/user/user_slice';
+import {IUser} from '../../../../interfaces';
 
 export const ViewUsers = (): JSX.Element => {
   const users = useAppSelector(state => state.user.users);

@@ -1,9 +1,9 @@
-import {ReactNode, useState} from 'react';
+import {useState} from 'react';
 import {InnerNavBar, InnerNavBarItem} from '../../components';
-import {AddUser} from './components/AddUser';
-import {DeleteUser} from './components/DeleteUser';
-import {EditUser} from './components/EditUser';
-import {ViewUsers} from './components/ViewUsers';
+import {AddEnrollment} from './components/enrollments/AddEnrollment';
+import {DeleteEnrollment} from './components/enrollments/DeleteEnrollment';
+import {EditEnrollment} from './components/enrollments/EditEnrollment';
+import {ViewEnrollments} from './components/enrollments/ViewEnrollments';
 
 interface IShowState {
   [key: string]: boolean;
@@ -20,7 +20,7 @@ const initialShowState: IShowState = {
   delete: false,
 };
 
-export const ManageUsers = (): JSX.Element => {
+export const ManageEnrollments = (): JSX.Element => {
   const [show, setShow] = useState({...initialShowState});
 
   const handleNavClick = (path: string) => {
@@ -36,32 +36,32 @@ export const ManageUsers = (): JSX.Element => {
           onClick={() => handleNavClick('view')}
           active={show.view}
         >
-          View Users
+          View Enrollments
         </InnerNavBarItem>
         <InnerNavBarItem
           onClick={() => handleNavClick('add')}
           active={show.add}
         >
-          Add User
+          Add Enrollment
         </InnerNavBarItem>
         <InnerNavBarItem
           onClick={() => handleNavClick('edit')}
           active={show.edit}
         >
-          Edit User
+          Edit Enrollment
         </InnerNavBarItem>
         <InnerNavBarItem
           onClick={() => handleNavClick('delete')}
           active={show.delete}
         >
-          Delete User
+          Delete Enrollment
         </InnerNavBarItem>
       </InnerNavBar>
       <div id="content_area">
-        {show.view && <ViewUsers />}
-        {show.add && <AddUser />}
-        {show.edit && <EditUser />}
-        {show.delete && <DeleteUser />}
+        {show.view && <ViewEnrollments />}
+        {show.add && <AddEnrollment />}
+        {show.edit && <EditEnrollment />}
+        {show.delete && <DeleteEnrollment />}
       </div>
     </div>
   );

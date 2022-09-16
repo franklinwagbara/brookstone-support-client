@@ -1,9 +1,9 @@
 import {ReactNode, useState} from 'react';
 import {InnerNavBar, InnerNavBarItem} from '../../components';
-import {AddUser} from './components/AddUser';
-import {DeleteUser} from './components/DeleteUser';
-import {EditUser} from './components/EditUser';
-import {ViewUsers} from './components/ViewUsers';
+import {AddUser} from './components/users/AddUser';
+import {DeleteUser} from './components/users/DeleteUser';
+import {EditUser} from './components/users/EditUser';
+import {ViewUsers} from './components/users/ViewUsers';
 
 interface IShowState {
   [key: string]: boolean;

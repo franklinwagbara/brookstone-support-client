@@ -7,8 +7,8 @@ import {
   Button,
 } from '@mui/material';
 import {useState} from 'react';
-import {useAddUserMutation} from '../../../features/user/user_api_slice';
-import {IUser} from '../../../interfaces';
+import {useAddUserMutation} from '../../../../features/user/user_api_slice';
+import {IUser} from '../../../../interfaces';
 
 const initialUSerState: IUser = {
   username: '',

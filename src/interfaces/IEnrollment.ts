@@ -5,12 +5,24 @@ import {ISubject} from './ISubject';
 import {ITranscript} from './ITranscript';
 import {IUser} from './IUser';
 
-export interface IEnrollment {
+interface IEnrollmentKeys {
+  [key: string]:
+    | string
+    | ISession
+    | IStudent
+    | IUser
+    | ISubject
+    | ITranscript
+    | IClassroom
+    | undefined;
+}
+
+export interface IEnrollment extends IEnrollmentKeys {
   _id?: string;
   student: IStudent;
   subject: ISubject;
-  session: ISession;
   teacher: IUser;
   classroom: IClassroom;
+  session: ISession;
   transcript: ITranscript;
 }

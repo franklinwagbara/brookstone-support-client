@@ -9,6 +9,7 @@ import {
 import {setCurrentUser} from '../features/auth/auth-slice';
 import {useAppDispatch, useAppSelector} from '../app/hooks';
 import {useNavigate} from 'react-router-dom';
+import {Loading} from './Loading';
 
 const Login = () => {
   const [auth, setAuth] = useState({email: '', password: ''} as IUser);
@@ -48,12 +49,7 @@ const Login = () => {
     }
   };
 
-  if (isLoadingLogin)
-    return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <CircularProgress size={200} color="secondary" />
-      </div>
-    );
+  if (isLoadingLogin) return <Loading loading={isLoadingLogin} />;
 
   return (
     <div className="h-3/4 flex items-center justify-center divide-x divide-solid gap-6">

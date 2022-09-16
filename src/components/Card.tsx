@@ -1,6 +1,4 @@
 import {BsPeopleFill} from 'react-icons/bs';
-import {IStudent, ISubject} from '../interfaces';
-import {Assessment} from './Assessment';
 import './style.css';
 
 interface CardProps {
@@ -8,16 +6,16 @@ interface CardProps {
   class_name: string;
   subject_name: string;
   teacher_name: string;
-  total?: string;
+  population?: number;
   onClick?: () => void;
 }
 
-export const ClassCard = ({
+export const Card = ({
   id,
   class_name,
   subject_name,
   teacher_name,
-  total,
+  population,
   onClick,
 }: CardProps) => {
   return (
@@ -38,7 +36,7 @@ export const ClassCard = ({
       </div>
       <div className="flex items-baseline gap-1">
         <BsPeopleFill />
-        <span>{total}</span>
+        <span>{population}</span>
       </div>
     </div>
   );

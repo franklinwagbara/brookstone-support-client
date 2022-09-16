@@ -22,16 +22,20 @@ export const AdminDashboard = (): JSX.Element => {
         onClick={() => handleClick('/dashboard/enrollments')}
       />
       <AdminCard
+        title="Manage Classroom Enrollments"
+        onClick={() => handleClick('/dashboard/classroomEnrollments')}
+      />
+      <AdminCard
         title="Manage Classrooms"
         onClick={() => handleClick('/dashboard/classrooms')}
       />
       <AdminCard
         title="Manage School Session"
-        onClick={() => handleClick('/dashboard/session')}
+        onClick={() => handleClick('/dashboard/sessions')}
       />
       <AdminCard
         title="Manage Subjects"
-        onClick={() => handleClick('/dashboard/subject')}
+        onClick={() => handleClick('/dashboard/subjects')}
       />
       <AdminCard
         title="Manage Year Groups"

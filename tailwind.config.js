@@ -4,14 +4,6 @@ module.exports = {
   theme: {
     extend: {
       colors: ({colors}) => ({
-        // primary: '#1C0862',
-        // secondary: '#20A4F3',
-        // background: '#C1CFDA',
-
-        // primary: '#0E0040',
-        // secondary: '#4DCCBD',
-        // background: '#D6FFF6',
-
         primary: '#0E0040',
         primary_accent: '#322B4A',
         primary_light: '#2D0F90',
@@ -24,6 +16,9 @@ module.exports = {
       },
       height: {
         vh: '100vh',
+      },
+      width: {
+        100: '420px',
       },
     },
   },
