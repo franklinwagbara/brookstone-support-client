@@ -5,7 +5,7 @@ export interface IBehaviour {
   _id: string;
   student: IStudent;
   session: ISession;
-  week: number;
+  week: string;
   active_participation_and_composure_during_lessons: number;
   ownership_of_learning: number;
   punctuality_and_attendance_to_lessons: number;

@@ -51,7 +51,12 @@ export const ViewEnrollments = (): JSX.Element => {
     }
   }, [data]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string
+  ) => {
+    e.preventDefault();
+
     await deleteEnrollment({_id: id} as IEnrollmentRequest)
       .unwrap()
       .then(payload =>
@@ -59,7 +64,7 @@ export const ViewEnrollments = (): JSX.Element => {
           setAlert({
             message: 'Deletion was successful.',
             show: true,
-            type: AlertType.ERROR,
+            type: AlertType.SUCCESS,
           })
         )
       )
@@ -90,7 +95,7 @@ export const ViewEnrollments = (): JSX.Element => {
 
 interface IEnrollmentTableProps {
   enrollments: IEnrollment[];
-  onDelete: (id: string) => void;
+  onDelete: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
 }
 const EnrollmentTable = ({
   enrollments,
@@ -164,7 +169,7 @@ const EnrollmentTable = ({
                 </td>
                 <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
                   <Button
-                    onClick={() => onDelete(enrollment._id as string)}
+                    onClick={e => onDelete(e, enrollment._id as string)}
                     variant="contained"
                     color="secondary"
                   >

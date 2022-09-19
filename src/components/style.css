@@ -10,10 +10,30 @@
   @apply w-full bg-secondary p-4 rounded-md leading-7 mb-3 text-primary shadow-card_shadow;
 }
 
-.table-td {
+/* .table-td {
   @apply py-2 text-center border border-slate-300;
 }
 
 .table-th {
   @apply px-5 py-2 border border-slate-300;
+} */
+
+.table-th-sticky {
+  @apply sticky left-0 bg-gray-200 px-6 py-3 text-xs font-medium uppercase tracking-wider text-gray-500 whitespace-nowrap text-center;
+}
+
+.table-th {
+  @apply px-6 py-3 text-xs font-medium uppercase tracking-wider text-gray-500 whitespace-nowrap text-center;
+}
+
+.table-td-sticky {
+  @apply sticky z-50 left-0  bg-gray-200 px-6 py-4 whitespace-nowrap text-center;
+}
+
+.table-td {
+  @apply px-6 py-4 whitespace-nowrap text-center;
+}
+
+.table-tr-behaviour {
+  @apply text-black;
 }

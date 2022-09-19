@@ -10,6 +10,8 @@ import {IYearGroup} from './IYearGroup';
 import {IClasses} from './IClasses';
 import {IClassroomEnrollment} from './IClassroomEnrollment';
 import {IBehaviour} from './IBehaviour';
+import {IBoardingHouse} from './IBoardingHouse';
+import {IBoardingEnrollment} from './IBoardingEnrollment';
 
 export type {
   IUser,
@@ -24,4 +26,6 @@ export type {
   IClasses,
   IClassroomEnrollment,
   IBehaviour,
+  IBoardingHouse,
+  IBoardingEnrollment,
 };

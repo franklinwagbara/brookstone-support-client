@@ -52,7 +52,6 @@ export const AssignedFormRooms = () => {
     }
   }, [fetchedClassroom, fetchedClassroomEnrollments]);
 
-  console.log('rooooms ....', formRoom, fetchedClassroomEnrollments);
   return (
     <div
       id="main"

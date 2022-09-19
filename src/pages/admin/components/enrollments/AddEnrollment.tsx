@@ -1,4 +1,4 @@
-import {TextField, FormControl, Button} from '@mui/material';
+import {Button} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {useAppSelector} from '../../../../app/hooks';
 import {InputSelect, Loading} from '../../../../components';
@@ -31,7 +31,6 @@ import {
   ITranscript,
   IUser,
 } from '../../../../interfaces';
-import {translateValueToID} from '../../../../utils';
 
 const initialEnrollmentState: IEnrollment = {
   student: '' as any,

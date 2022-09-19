@@ -83,7 +83,22 @@ export const classroomEnrollmentApiSlice = createApi({
           return {
             url: `/classroomenrollment/${arg._id}`,
             method: 'PUT',
-            body: _.pick(arg, ['student', 'session', 'classroom']),
+            body: _.pick(arg, [
+              'student',
+              'session',
+              'classroom',
+              'week_1_comment',
+              'week_2_comment',
+              'week_3_comment',
+              'week_4_comment',
+              'week_5_comment',
+              'week_6_comment',
+              'week_7_comment',
+              'week_8_comment',
+              'week_9_comment',
+              'half_term_comment',
+              'end_of_term_comment',
+            ]),
             credentials: 'include',
           };
         },

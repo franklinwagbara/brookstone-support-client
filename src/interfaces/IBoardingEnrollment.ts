@@ -1,13 +1,12 @@
-import {IClassroom} from './IClassroom';
+import {IBoardingHouse} from './IBoardingHouse';
 import {ISession} from './ISession';
 import {IStudent} from './IStudent';
 
-export interface IClassroomEnrollment {
-  [key: string]: any;
+export interface IBoardingEnrollment {
   _id?: string;
   student: IStudent;
   session: ISession;
-  classroom: IClassroom;
+  boarding_house: IBoardingHouse;
   week_1_comment?: string;
   week_2_comment?: string;
   week_3_comment?: string;

@@ -34,6 +34,7 @@ export interface ITranscript extends ObjectKey {
   week_6?: number;
   week_7?: number;
   week_8?: number;
+  week_9?: number;
   ca_2?: number;
   final_exam?: number;
   total?: number;

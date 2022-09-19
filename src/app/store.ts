@@ -9,6 +9,7 @@ import subjectReducer from '../features/subject/subject_slice';
 import classroomReducer from '../features/classroom/classroom_slice';
 import classroomEnrollmentReducer from '../features/classroomEnrollment/classroomEnrollment_slice';
 import alertReducer from '../features/alert/alert-slice';
+import behaviourReducer from '../features/behaviour/behaviour_slice';
 import {authApiSlice} from '../features/auth/auth_api_slice';
 import {sessionApiSlice} from '../features/session/session_api_slice';
 import {enrollmentApiSlice} from '../features/enrollment/enrollment_api_slice';
@@ -19,6 +20,7 @@ import {yearGroupApiSlice} from '../features/yearGroup/yearGroup_api_slice';
 import {subjectApiSlice} from '../features/subject/subject_api_slice';
 import {classroomApiSlice} from '../features/classroom/classroom_api_slice';
 import {classroomEnrollmentApiSlice} from '../features/classroomEnrollment/classroomEnrollment_api_slice';
+import {behaviourApiSlice} from '../features/behaviour/behaviour_api_slice';
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +34,7 @@ export const store = configureStore({
     classroom: classroomReducer,
     classroomEnrollment: classroomEnrollmentReducer,
     alert: alertReducer,
+    behaviour: behaviourReducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [sessionApiSlice.reducerPath]: sessionApiSlice.reducer,
     [enrollmentApiSlice.reducerPath]: enrollmentApiSlice.reducer,
@@ -43,6 +46,7 @@ export const store = configureStore({
     [classroomApiSlice.reducerPath]: classroomApiSlice.reducer,
     [classroomEnrollmentApiSlice.reducerPath]:
       classroomEnrollmentApiSlice.reducer,
+    [behaviourApiSlice.reducerPath]: behaviourApiSlice.reducer,
   },
   middleware: getDefaultMiddleware => {
     return getDefaultMiddleware()
@@ -55,7 +59,8 @@ export const store = configureStore({
       .concat(yearGroupApiSlice.middleware)
       .concat(subjectApiSlice.middleware)
       .concat(classroomApiSlice.middleware)
-      .concat(classroomEnrollmentApiSlice.middleware);
+      .concat(classroomEnrollmentApiSlice.middleware)
+      .concat(behaviourApiSlice.middleware);
   },
 });
 

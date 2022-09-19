@@ -24,6 +24,7 @@ export interface ITranscriptRequest extends IRequestParams {
   week_6?: string;
   week_7?: string;
   week_8?: string;
+  week_9?: string;
   ca_2?: string;
   final_exam?: string;
   total?: string;
@@ -103,6 +104,7 @@ export const transcriptApiSlice = createApi({
               'week_6',
               'week_7',
               'week_8',
+              'week_9',
               'ca_2',
               'final_exam',
               'total',
