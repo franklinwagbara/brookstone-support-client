@@ -1,47 +1,46 @@
 import {Button} from '@mui/material';
 import React, {useEffect, useState} from 'react';
-import {useAppDispatch, useAppSelector} from '../../../../app/hooks';
+import {useAppSelector} from '../../../../app/hooks';
 import {InputSelect, Loading} from '../../../../components';
-import {setAlert} from '../../../../features/alert/alert-slice';
 import {
-  useFetchClassroomsQuery,
-  IClassroomRequest,
-} from '../../../../features/classroom/classroom_api_slice';
+  useFetchBoardingHousesQuery,
+  IBoardingHouseRequest,
+} from '../../../../features/boardingHouse/boardingHouse_api_slice';
 import {
-  useAddClassroomEnrollmentMutation,
-  useUpdateClassroomEnrollmentMutation,
-} from '../../../../features/classroomEnrollment/classroomEnrollment_api_slice';
+  useAddBoardingEnrollmentMutation,
+  useUpdateBoardingEnrollmentMutation,
+} from '../../../../features/boardingEnrollment/boardingEnrollment_api_slice';
 import {useFetchSessionsQuery} from '../../../../features/session/session_api_slice';
 import {useFetchStudentsQuery} from '../../../../features/student/student_api_slice';
-import {AlertType} from '../../../../globals';
 import {
   IResult,
-  IClassroomEnrollment,
-  IClassroom,
+  IBoardingEnrollment,
+  IBoardingHouse,
   ISession,
   IStudent,
 } from '../../../../interfaces';
 
-const initialEnrollmentState: IClassroomEnrollment = {
+const initialEnrollmentState: IBoardingEnrollment = {
   student: '' as any,
-  classroom: '' as any,
+  boarding_house: '' as any,
   session: '' as any,
 };
 
-export const AddClassroomEnrollment = () => {
+export const AddBoardingEnrollment = () => {
   const currentSession = useAppSelector(state => state.session.currentSession);
   const [students, setStudents] = useState<IStudent[] | null>(null);
-  const [classrooms, setClassrooms] = useState<IClassroom[] | null>(null);
+  const [boardingHouses, setBoardingHouses] = useState<IBoardingHouse[] | null>(
+    null
+  );
   const [sessions, setSessions] = useState<ISession[] | null>(null);
-  const dispatch = useAppDispatch();
-  const [enrollmentInfo, setEnrollmentInfo] = useState<IClassroomEnrollment>({
+  const [enrollmentInfo, setEnrollmentInfo] = useState<IBoardingEnrollment>({
     student: '' as any,
-    classroom: '' as any,
+    boarding_house: '' as any,
     session: '' as any,
   });
 
   const [addEnrollment, {isSuccess: isSuccessAddEnrollment}] =
-    useAddClassroomEnrollmentMutation();
+    useAddBoardingEnrollmentMutation();
   const {
     data: fetchedStudents,
     isLoading: isLoadingStudents,
@@ -54,12 +53,13 @@ export const AddClassroomEnrollment = () => {
   } = useFetchSessionsQuery();
 
   const {
-    data: fetchedClassrooms,
-    isLoading: isLoadingClassrooms,
-    isSuccess: isSuccesClassrooms,
-  } = useFetchClassroomsQuery({} as IClassroomRequest);
+    data: fetchedBoardingHouses,
+    isLoading: isLoadingBoardingHouses,
+    isSuccess: isSuccesBoardingHouses,
+  } = useFetchBoardingHousesQuery({} as IBoardingHouseRequest);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log('onSubmit', enrollmentInfo);
     const _enrollmentInfo = {
       _id: enrollmentInfo._id as string,
       student: students?.find(
@@ -72,46 +72,28 @@ export const AddClassroomEnrollment = () => {
         session => session.session === (enrollmentInfo.session as any)
       )?._id as any,
 
-      classroom: classrooms?.find(
-        classroom => classroom.name === (enrollmentInfo.classroom as any)
+      boarding_house: boardingHouses?.find(
+        boarding_house =>
+          boarding_house.name === (enrollmentInfo.boarding_house as any)
       )?._id as any,
     };
-    console.log('before sumb', _enrollmentInfo);
-    await addEnrollment(_enrollmentInfo)
-      .unwrap()
-      .then(payload =>
-        dispatch(
-          setAlert({
-            message: 'Boarding House was created successfully!',
-            show: true,
-            type: AlertType.SUCCESS,
-          })
-        )
-      )
-      .catch(error =>
-        dispatch(
-          setAlert({
-            message: JSON.stringify(error),
-            show: true,
-            type: AlertType.ERROR,
-          })
-        )
-      );
-    setEnrollmentInfo({...initialEnrollmentState});
+    console.log('_enrollmentinfo', _enrollmentInfo);
+    await addEnrollment(_enrollmentInfo);
   };
 
   useEffect(() => {
     if (isSuccesStudents)
       setStudents((fetchedStudents as IResult<IStudent>).data as IStudent[]);
-    if (isSuccesClassrooms)
-      setClassrooms(
-        (fetchedClassrooms as IResult<IClassroom>).data as IClassroom[]
+    if (isSuccesBoardingHouses)
+      setBoardingHouses(
+        (fetchedBoardingHouses as IResult<IBoardingHouse>)
+          .data as IBoardingHouse[]
       );
     if (isSuccesSessions)
       setSessions((fetchedSessions as IResult<ISession>).data as ISession[]);
-  }, [fetchedStudents, fetchedClassrooms, fetchedSessions]);
+  }, [fetchedStudents, fetchedBoardingHouses, fetchedSessions]);
 
-  if (isLoadingStudents || isLoadingClassrooms || isLoadingSessions) {
+  if (isLoadingStudents || isLoadingBoardingHouses || isLoadingSessions) {
     return <Loading loading={true} />;
   }
   return (
@@ -131,15 +113,15 @@ export const AddClassroomEnrollment = () => {
         }
       />
       <InputSelect
-        label="Classroom"
-        value={enrollmentInfo.classroom}
+        label="Boarding House"
+        value={enrollmentInfo.boarding_house}
         onChange={e =>
-          setEnrollmentInfo({...enrollmentInfo, classroom: e.target.value})
+          setEnrollmentInfo({...enrollmentInfo, boarding_house: e.target.value})
         }
         selectionList={
-          fetchedClassrooms?.data
-            ? (fetchedClassrooms?.data as IClassroom[]).map(
-                classroom => classroom.name
+          fetchedBoardingHouses?.data
+            ? (fetchedBoardingHouses?.data as IBoardingHouse[]).map(
+                boarding_house => boarding_house.name
               )
             : ['']
         }

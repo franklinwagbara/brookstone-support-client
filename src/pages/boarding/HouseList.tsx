@@ -2,46 +2,48 @@ import {Button} from '@mui/material';
 import {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {EditFormRoomModal, InputSelect, Loading} from '../../components';
-import {useFetchClassroomQuery} from '../../features/classroom/classroom_api_slice';
+import {EditBoardingHouseModal, InputSelect, Loading} from '../../components';
+import {useFetchBoardingHouseQuery} from '../../features/boardingHouse/boardingHouse_api_slice';
 import {
-  useFetchClassroomEnrollmentsQuery,
-  useUpdateClassroomEnrollmentMutation,
-} from '../../features/classroomEnrollment/classroomEnrollment_api_slice';
-import {IClassroom, IClassroomEnrollment} from '../../interfaces';
+  useFetchBoardingEnrollmentsQuery,
+  useUpdateBoardingEnrollmentMutation,
+} from '../../features/boardingEnrollment/boardingEnrollment_api_slice';
+import {IBoardingHouse, IBoardingEnrollment} from '../../interfaces';
 import {AlertType, WEEKS, WEEKS_MAPPER} from '../../globals/constants';
 import {setAlert} from '../../features/alert/alert-slice';
 
-export const FormList = (): JSX.Element => {
+export const HouseList = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const currentSession = useAppSelector(state => state.session.currentSession);
-  const [classroom, setClassroom] = useState<IClassroom | null>(null);
-  const [enrollments, setEnrollments] = useState<IClassroomEnrollment[] | null>(
+  const [boardingHouse, setBoardingHouse] = useState<IBoardingHouse | null>(
+    null
+  );
+  const [enrollments, setEnrollments] = useState<IBoardingEnrollment[] | null>(
     null
   );
   const [openModal, setOpenModal] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] =
-    useState<IClassroomEnrollment | null>(null);
+    useState<IBoardingEnrollment | null>(null);
 
-  const {formroom_id} = useParams();
+  const {house_id} = useParams();
   const {
-    data: fetchedClassroom,
-    isLoading: isLoadingClassroom,
-    isSuccess: isSuccessClassroom,
-  } = useFetchClassroomQuery({_id: formroom_id});
+    data: fetchedBoardingHouse,
+    isLoading: isLoadingBoardingHouse,
+    isSuccess: isSuccessBoardingHouse,
+  } = useFetchBoardingHouseQuery({_id: house_id});
   const {
-    data: fetchedClassroomEnrollments,
-    refetch: refetchClassroomEnrollments,
-    isLoading: isLoadingClassroomEnrollments,
-    isSuccess: isSuccessClassroomEnrollments,
-  } = useFetchClassroomEnrollmentsQuery({classroom: formroom_id});
+    data: fetchedBoardingEnrollments,
+    refetch: refetchBoardingEnrollments,
+    isLoading: isLoadingBoardingEnrollments,
+    isSuccess: isSuccessBoardingEnrollments,
+  } = useFetchBoardingEnrollmentsQuery({boarding_house: house_id});
 
   const [
-    updateClassroomEnrollment,
-    {isLoading: isLoadingCE, isSuccess: isSuccessCE},
-  ] = useUpdateClassroomEnrollmentMutation();
+    updateBoardingEnrollment,
+    {isLoading: isLoadingBE, isSuccess: isSuccessBE},
+  ] = useUpdateBoardingEnrollmentMutation();
 
-  const handleAssessment = (enrollment: IClassroomEnrollment) => {
+  const handleAssessment = (enrollment: IBoardingEnrollment) => {
     setSelectedEnrollment(enrollment);
     setOpenModal(prev => !prev);
   };
@@ -50,17 +52,17 @@ export const FormList = (): JSX.Element => {
     setOpenModal(prev => !prev);
   };
 
-  const handleSubmit = async (formRoomInfo: IClassroomEnrollment) => {
-    await updateClassroomEnrollment({
-      ...(formRoomInfo as any),
-      _id: formRoomInfo._id as string,
-      student: formRoomInfo.student._id as string,
+  const handleSubmit = async (boardingHouseInfo: IBoardingEnrollment) => {
+    await updateBoardingEnrollment({
+      ...(boardingHouseInfo as any),
+      _id: boardingHouseInfo._id as string,
+      student: boardingHouseInfo.student._id as string,
       session: currentSession?._id as string,
-      classroom: formRoomInfo.classroom._id as string,
+      boarding_house: boardingHouseInfo.boarding_house._id as string,
     })
       .unwrap()
       .then(() => {
-        refetchClassroomEnrollments();
+        refetchBoardingEnrollments();
         dispatch(
           setAlert({
             message: 'Assessment was successfully updated!',
@@ -82,47 +84,45 @@ export const FormList = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (isSuccessClassroom) {
-      setClassroom(fetchedClassroom.data as IClassroom);
+    if (isSuccessBoardingHouse) {
+      setBoardingHouse(fetchedBoardingHouse.data as IBoardingHouse);
     }
-    if (isSuccessClassroomEnrollments) {
-      setEnrollments(
-        fetchedClassroomEnrollments.data as IClassroomEnrollment[]
-      );
+    if (isSuccessBoardingEnrollments) {
+      setEnrollments(fetchedBoardingEnrollments.data as IBoardingEnrollment[]);
     }
-  }, [fetchedClassroom, fetchedClassroomEnrollments]);
+  }, [fetchedBoardingHouse, fetchedBoardingEnrollments]);
 
-  if (isLoadingClassroom || isLoadingClassroomEnrollments) {
+  if (isLoadingBoardingHouse || isLoadingBoardingEnrollments) {
     return <Loading loading={true} />;
   }
   return (
     <div>
       <div id="basic_info" className="basic_info">
         <h3>
-          <span className="font-bold tracking-wider">Class: </span>
-          {enrollments && enrollments[0].classroom.name}
+          <span className="font-bold tracking-wider">Boarding House: </span>
+          {enrollments && enrollments[0].boarding_house.name}
         </h3>
         <h3>
-          <span className="font-bold tracking-wider">Form Tutor: </span>
-          {classroom &&
-            classroom.form_tutor.lastname +
+          <span className="font-bold tracking-wider">Boarding Parent: </span>
+          {boardingHouse &&
+            boardingHouse.boarding_parent.lastname +
               ', ' +
-              classroom.form_tutor.firstname}
+              boardingHouse.boarding_parent.firstname}
         </h3>
         <h3>
           <span className="font-bold tracking-wider">Population: </span>
           {enrollments && enrollments.length}
         </h3>
       </div>
-      {enrollments && classroom && (
+      {enrollments && boardingHouse && (
         <EnrollmentTable
           enrollments={enrollments}
-          formRoom={classroom}
+          formRoom={boardingHouse}
           onAssessment={handleAssessment}
         />
       )}
       {selectedEnrollment && (
-        <EditFormRoomModal
+        <EditBoardingHouseModal
           open={openModal}
           onSubmit={handleSubmit}
           onClose={handleCloseModal}
@@ -133,16 +133,16 @@ export const FormList = (): JSX.Element => {
   );
 };
 
-interface IClassroomEnrollmentTableProps {
-  enrollments: IClassroomEnrollment[];
-  formRoom: IClassroom;
-  onAssessment: (enrollment: IClassroomEnrollment) => void;
+interface IBoardingEnrollmentTableProps {
+  enrollments: IBoardingEnrollment[];
+  formRoom: IBoardingHouse;
+  onAssessment: (enrollment: IBoardingEnrollment) => void;
 }
 const EnrollmentTable = ({
   enrollments,
   formRoom,
   onAssessment,
-}: IClassroomEnrollmentTableProps): JSX.Element => {
+}: IBoardingEnrollmentTableProps): JSX.Element => {
   const [week, setWeek] = useState<string>('1');
 
   return (
@@ -172,7 +172,7 @@ const EnrollmentTable = ({
         <tbody>
           {enrollments &&
             enrollments.map(
-              (enrollment: IClassroomEnrollment, index: number) => (
+              (enrollment: IBoardingEnrollment, index: number) => (
                 <tr key={enrollment._id as string}>
                   <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
                     {index + 1}
@@ -184,7 +184,9 @@ const EnrollmentTable = ({
                   </td>
                   <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
                     {enrollment &&
-                      enrollment[WEEKS_MAPPER[week] as unknown as any]}
+                      (enrollment[
+                        WEEKS_MAPPER[week] as unknown as string
+                      ] as string)}
                   </td>
                   <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
                     <Button

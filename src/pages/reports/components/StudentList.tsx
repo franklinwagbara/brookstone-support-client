@@ -9,7 +9,10 @@ import {
 } from '@mui/material';
 import {useEffect, useState} from 'react';
 import {
+  IBehaviour,
+  IBoardingEnrollment,
   IClassroom,
+  IClassroomEnrollment,
   IEnrollment,
   IResult,
   IStudent,
@@ -20,6 +23,10 @@ import logo from '../../../assets/images/logo.png';
 import {useAppSelector} from '../../../app/hooks';
 import {setClassrooms} from '../../../features/classroom/classroom_slice';
 import {useFetchEnrollmentsQuery} from '../../../features/enrollment/enrollment_api_slice';
+import {useFetchClassroomEnrollmentsQuery} from '../../../features/classroomEnrollment/classroomEnrollment_api_slice';
+import {useFetchBoardingEnrollmentsQuery} from '../../../features/boardingEnrollment/boardingEnrollment_api_slice';
+import {useFetchBehavioursQuery} from '../../../features/behaviour/behaviour_api_slice';
+import {GiCheckMark} from 'react-icons/gi/';
 
 interface StudentListProps {
   students: IStudent[] | null;
@@ -116,6 +123,35 @@ const weeks: {
   'Week 7': 'week_7',
   'Week 8': 'week_8',
   'Week 9': 'week_9',
+  'CA 1': 'ca_1',
+  'CA 2': 'ca_2',
+  CCM: 'ccm',
+  'Half Term': 'half_term_exam',
+  'Final Exam': 'final_exam',
+  Total: 'total',
+  GPA: 'gpa',
+  Grade: 'grade',
+};
+
+const WEEKS_COMMENT_MAPPER: {
+  [key: string]: string;
+} = {
+  'Week 1': 'week_1_comment',
+  'Week 2': 'week_2_comment',
+  'Week 3': 'week_3_comment',
+  'Week 4': 'week_4_comment',
+  'Week 5': 'week_5_comment',
+  'Week 6': 'week_6_comment',
+  'Week 7': 'week_7_comment',
+  'Week 8': 'week_8_comment',
+  'Week 9': 'week_9_comment',
+  'CA 1': 'half_term_comment',
+  'CA 2': 'half_term_comment',
+  CCM: 'half_term_comment',
+  'Final Exam': 'end_of_term_comment',
+  Total: 'end_of_term_comment',
+  GPA: 'end_of_term_comment',
+  Grade: 'end_of_term_comment',
 };
 
 export const ReportSheet = ({
@@ -126,6 +162,13 @@ export const ReportSheet = ({
   const currentSession = useAppSelector(state => state.session.currentSession);
   const [week, setWeek] = useState<any>('Week 1');
   const [enrollments, setEnrollments] = useState<IEnrollment[] | null>(null);
+  const [behaviours, setBehaviours] = useState<IBehaviour[] | null>(null);
+  const [behaviour, setBehaviour] = useState<IBehaviour | null>(null);
+  const [classroomEnrollment, setClassroomEnrollment] =
+    useState<IClassroomEnrollment | null>(null);
+  const [boardingEnrollment, setBoardingEnrollment] =
+    useState<IBoardingEnrollment | null>(null);
+
   const {
     data: fetchedEnrollments,
     isLoading: isLoadingEnrollments,
@@ -134,6 +177,42 @@ export const ReportSheet = ({
     session: currentSession?._id as any,
     student: student._id as any,
   });
+  const {
+    data: fetchedClassroomEnrollments,
+    isLoading: isLoadingClassroomEnrollments,
+    isSuccess: isSuccessClassroomEnrollments,
+  } = useFetchClassroomEnrollmentsQuery(
+    {
+      student: student._id as any,
+      session: currentSession?._id as any,
+      classroom: student.classroom?._id as any,
+    },
+    {skip: !student._id || !currentSession?._id || !student.classroom?._id}
+  );
+
+  const {
+    data: fetchedBehaviours,
+    isLoading: isLoadingBehaviours,
+    isSuccess: isSuccessBehaviours,
+  } = useFetchBehavioursQuery(
+    {
+      student: student._id as any,
+      session: currentSession?._id as any,
+    },
+    {skip: !student._id || !currentSession?._id}
+  );
+
+  const {
+    data: fetchedBoardingEnrollments,
+    isLoading: isLoadingBoardingEnrollments,
+    isSuccess: isSuccessBoardingEnrollments,
+  } = useFetchBoardingEnrollmentsQuery(
+    {
+      student: student._id as any,
+      session: currentSession?._id as any,
+    },
+    {skip: !student._id || !currentSession?._id}
+  );
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     onClose();
@@ -145,7 +224,39 @@ export const ReportSheet = ({
         (fetchedEnrollments as IResult<IEnrollment>).data as IEnrollment[]
       );
     }
-  }, [fetchedEnrollments]);
+
+    if (isSuccessClassroomEnrollments) {
+      setClassroomEnrollment(
+        (
+          (fetchedClassroomEnrollments as IResult<IClassroomEnrollment>)
+            .data as IClassroomEnrollment[]
+        )[0]
+      );
+    }
+
+    if (isSuccessBehaviours) {
+      setBehaviours(
+        (fetchedBehaviours as IResult<IBehaviour>).data as IBehaviour[]
+      );
+    }
+
+    if (isSuccessBoardingEnrollments) {
+      setBoardingEnrollment(
+        (
+          (fetchedBoardingEnrollments as IResult<IBoardingEnrollment>)
+            .data as IBoardingEnrollment[]
+        )[0]
+      );
+    }
+
+    const _behaviour = behaviours?.find(b => (week as string).includes(b.week));
+    if (_behaviour) setBehaviour(_behaviour);
+  }, [
+    fetchedEnrollments,
+    fetchedClassroomEnrollments,
+    fetchedBehaviours,
+    week,
+  ]);
 
   if (isLoadingEnrollments)
     return (
@@ -153,7 +264,8 @@ export const ReportSheet = ({
         <CircularProgress size={200} color="secondary" />
       </div>
     );
-  console.log('weeks', enrollments);
+
+  console.log('boarding enrollment', boardingEnrollment, behaviour);
   return (
     <div>
       <Dialog open={openModal} onClose={onClose} maxWidth={'xl'}>
@@ -201,7 +313,7 @@ export const ReportSheet = ({
             </div>
             <div>
               <span className="text-base font-bold">FORM ROOM : </span>
-              <span>{student?.classroom?.name}</span>
+              <span className="px-4">{student?.classroom?.name}</span>
             </div>
           </div>
         </DialogTitle>
@@ -345,11 +457,61 @@ export const ReportSheet = ({
                   >
                     Active participation and composure during lessions
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.active_participation_and_composure_during_lessons as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.active_participation_and_composure_during_lessons as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.active_participation_and_composure_during_lessons as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.active_participation_and_composure_during_lessons as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.active_participation_and_composure_during_lessons as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -358,11 +520,56 @@ export const ReportSheet = ({
                   >
                     Ownership of learning
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.ownership_of_learning as string) ===
+                    5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.ownership_of_learning as string) ===
+                    4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.ownership_of_learning as string) ===
+                    3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.ownership_of_learning as string) ===
+                    2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.ownership_of_learning as string) ===
+                    1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -371,11 +578,61 @@ export const ReportSheet = ({
                   >
                     Punctuality and attendance to lessons
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.punctuality_and_attendance_to_lessons as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.punctuality_and_attendance_to_lessons as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.punctuality_and_attendance_to_lessons as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.punctuality_and_attendance_to_lessons as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.punctuality_and_attendance_to_lessons as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -384,11 +641,61 @@ export const ReportSheet = ({
                   >
                     Motivation and value for academic success
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.motivation_and_value_for_academic_success as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.motivation_and_value_for_academic_success as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.motivation_and_value_for_academic_success as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.motivation_and_value_for_academic_success as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.motivation_and_value_for_academic_success as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -397,11 +704,61 @@ export const ReportSheet = ({
                   >
                     Self-confidence towards academic work
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.self_confidence_towards_academic_work as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.self_confidence_towards_academic_work as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.self_confidence_towards_academic_work as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.self_confidence_towards_academic_work as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.self_confidence_towards_academic_work as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -410,11 +767,61 @@ export const ReportSheet = ({
                   >
                     Effective use of study skills
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.effective_use_of_study_skills as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.effective_use_of_study_skills as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.effective_use_of_study_skills as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.effective_use_of_study_skills as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.effective_use_of_study_skills as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -423,11 +830,61 @@ export const ReportSheet = ({
                   >
                     Assessed extended learning
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.Assessed_extended_learning as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.Assessed_extended_learning as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.Assessed_extended_learning as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.Assessed_extended_learning as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.Assessed_extended_learning as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
               </table>
               <div
@@ -435,7 +892,10 @@ export const ReportSheet = ({
                 className="mt-4 border border-black p-2"
               >
                 <h4 className="font-bold mb-2">Form Tutor's comment:</h4>
-                <p>Comment Here</p>
+                <p>
+                  {classroomEnrollment &&
+                    (classroomEnrollment[WEEKS_COMMENT_MAPPER[week]] as string)}
+                </p>
               </div>
             </div>
             <div className="flex flex-row gap-4 w-full">
@@ -480,11 +940,61 @@ export const ReportSheet = ({
                   >
                     Completion of extended learning
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.completion_of_extended_learning as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.completion_of_extended_learning as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.completion_of_extended_learning as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.completion_of_extended_learning as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.completion_of_extended_learning as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -493,11 +1003,56 @@ export const ReportSheet = ({
                   >
                     Organizational skills
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.organizational_skills as string) ===
+                    5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.organizational_skills as string) ===
+                    4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.organizational_skills as string) ===
+                    3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.organizational_skills as string) ===
+                    2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.organizational_skills as string) ===
+                    1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -506,11 +1061,61 @@ export const ReportSheet = ({
                   >
                     Obedience to pastoral rules and regulations
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.obedience_to_pastoral_rules_and_regulations as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.obedience_to_pastoral_rules_and_regulations as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.obedience_to_pastoral_rules_and_regulations as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.obedience_to_pastoral_rules_and_regulations as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.obedience_to_pastoral_rules_and_regulations as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -519,11 +1124,61 @@ export const ReportSheet = ({
                   >
                     Cooperation with support teachers
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_support_teachers as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_support_teachers as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_support_teachers as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_support_teachers as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_support_teachers as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -532,11 +1187,61 @@ export const ReportSheet = ({
                   >
                     Cooperation with boarding parents
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_boarding_parents as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_boarding_parents as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_boarding_parents as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_boarding_parents as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.cooperation_with_boarding_parents as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -545,11 +1250,61 @@ export const ReportSheet = ({
                   >
                     Ability to concentrate during prep
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.ability_to_concentrate_during_prep as string
+                    ) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.ability_to_concentrate_during_prep as string
+                    ) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.ability_to_concentrate_during_prep as string
+                    ) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.ability_to_concentrate_during_prep as string
+                    ) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(
+                      behaviour?.ability_to_concentrate_during_prep as string
+                    ) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
                 <tr>
                   <th
@@ -558,11 +1313,51 @@ export const ReportSheet = ({
                   >
                     Punctuality
                   </th>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
-                  <td className="border border-black text-center">1</td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.punctuality as string) === 5 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.punctuality as string) === 4 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.punctuality as string) === 3 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.punctuality as string) === 2 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td className="border border-black text-center">
+                    {parseInt(behaviour?.punctuality as string) === 1 ? (
+                      <div className="w-2 mx-auto">
+                        <GiCheckMark />
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </td>
                 </tr>
               </table>
               <div

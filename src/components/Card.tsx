@@ -8,6 +8,7 @@ interface CardProps {
   teacher_name: string;
   population?: number;
   onClick?: () => void;
+  color?: 'primary' | 'secondary';
 }
 
 export const Card = ({
@@ -17,20 +18,24 @@ export const Card = ({
   teacher_name,
   population,
   onClick,
+  color,
 }: CardProps) => {
   return (
-    <div className="card" onClick={onClick}>
+    <div
+      className={`card ${color ? `bg-${color}` : 'bg-primary_light'}`}
+      onClick={onClick}
+    >
       <div>
         <h5>
-          <span className="font-bold">Class: </span>
+          <span className="font-bold mr-2">Class: </span>
           {class_name}
         </h5>
         <p>
-          <span className="font-bold">Subject: </span>
+          <span className="font-bold mr-2">Subject: </span>
           {subject_name}
         </p>
         <p>
-          <span className="font-bold">Teacher: </span>
+          <span className="font-bold mr-2">Teacher: </span>
           {teacher_name}
         </p>
       </div>

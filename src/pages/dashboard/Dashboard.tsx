@@ -1,4 +1,3 @@
-import {Alert} from '@mui/material';
 import {ReactNode, useEffect} from 'react';
 import {Navigate, Outlet, useNavigate} from 'react-router-dom';
 import {NavItems} from '../../components/Header';
@@ -9,6 +8,8 @@ import {setEnrollments} from '../../features/enrollment/enrollment_slice';
 import {useFetchEnrollmentsQuery} from '../../features/enrollment/enrollment_api_slice';
 import {CircularProgress} from '@mui/material';
 import {setAlert} from '../../features/alert/alert-slice';
+import {ROLES} from '../../globals/roles';
+import {Alert} from '../../components';
 
 export const Dashboard = (): JSX.Element => {
   const alert = useAppSelector(state => state.alert);
@@ -55,39 +56,78 @@ export const Dashboard = (): JSX.Element => {
         className="basis-1/6 min-h-full bg-primary_accent shadow-header_shadow text-background flex justify-center pt-8"
       >
         <NavItems>
-          <SideNavItem
-            onClick={() => navigate('/dashboard/assignedclasses')}
-            content="Home"
-            home
-          />
-          <SideNavItem
-            onClick={() => navigate('/dashboard/assignedclasses')}
-            content="Classes"
-          />
-          <SideNavItem
-            onClick={() => navigate('/dashboard/assignedformrooms')}
-            content="Form Rooms"
-          />
-          <SideNavItem
-            onClick={() => navigate('/dashboard/assessment')}
-            content="Assessment"
-          />
-          <SideNavItem
-            onClick={() => navigate('/dashboard/admin')}
-            content="Admin"
-          />
-          <SideNavItem
-            onClick={() => navigate('/dashboard/reports')}
-            content="Reports"
-          />
+          {currentUser &&
+            [
+              ROLES.teacher,
+              ROLES.admin,
+              ROLES.boarding_parent_and_teacher,
+              ROLES.form_tutor_and_teacher,
+            ].includes(currentUser.role as string) && (
+              <>
+                <SideNavItem
+                  onClick={() => navigate('/dashboard/assignedclasses')}
+                  content="Home"
+                  home
+                />
+                <SideNavItem
+                  onClick={() => navigate('/dashboard/assignedclasses')}
+                  content="Classes"
+                />
+              </>
+            )}
+
+          {currentUser &&
+            [
+              ROLES.admin,
+              ROLES.form_tutor,
+              ROLES.form_tutor_and_teacher,
+            ].includes(currentUser.role as string) && (
+              <>
+                <SideNavItem
+                  onClick={() => navigate('/dashboard/assignedformrooms')}
+                  content="Form Rooms"
+                />
+              </>
+            )}
+          {currentUser &&
+            [
+              ROLES.admin,
+              ROLES.boarding_parent,
+              ROLES.boarding_parent_and_teacher,
+            ].includes(currentUser.role as string) && (
+              <>
+                <SideNavItem
+                  onClick={() => navigate('/dashboard/assignedboardinghouses')}
+                  content="Boarding"
+                />
+              </>
+            )}
+          {currentUser && currentUser.role === ROLES.admin && (
+            <>
+              <SideNavItem
+                onClick={() => navigate('/dashboard/assessment')}
+                content="Assessment"
+              />
+              <SideNavItem
+                onClick={() => navigate('/dashboard/admin')}
+                content="Admin"
+              />
+              <SideNavItem
+                onClick={() => navigate('/dashboard/reports')}
+                content="Reports"
+              />
+            </>
+          )}
         </NavItems>
       </div>
       <div id="main" className="px-6 py-8 flex flex-col flex-1">
-        {alert.show && (
-          <Alert severity={alert.type} color={alert.type} onClose={handleShow}>
-            {alert.message}
-          </Alert>
-        )}
+        <Alert
+          show={alert.show}
+          severity={alert.type}
+          color={alert.type}
+          message={alert.message}
+          onClose={handleShow}
+        />
 
         {currentUser ? <Outlet /> : <Navigate to="/" />}
       </div>

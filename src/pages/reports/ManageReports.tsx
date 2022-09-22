@@ -1,16 +1,8 @@
 import {TextField} from '@mui/material';
 import {useEffect, useState} from 'react';
 import {useAppSelector} from '../../app/hooks';
-import {
-  InnerNavBar,
-  InnerNavBarItem,
-  InputSelect,
-  Loading,
-} from '../../components';
-import {
-  useFetchStudentsQuery,
-  useFetchStudentsWithArgQuery,
-} from '../../features/student/student_api_slice';
+import {InputSelect, Loading} from '../../components';
+import {useFetchStudentsWithArgQuery} from '../../features/student/student_api_slice';
 import {IStudent} from '../../interfaces';
 import {StudentList} from './components/StudentList';
 

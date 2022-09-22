@@ -90,7 +90,7 @@ export const classroomApiSlice = createApi({
         {
           query(arg) {
             return {
-              url: `/classroom/${arg.classroom_id}`,
+              url: `/classroom/${arg._id}`,
               method: 'DELETE',
               credentials: 'include',
             };

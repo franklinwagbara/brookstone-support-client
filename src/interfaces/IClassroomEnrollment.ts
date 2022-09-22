@@ -2,7 +2,11 @@ import {IClassroom} from './IClassroom';
 import {ISession} from './ISession';
 import {IStudent} from './IStudent';
 
-export interface IClassroomEnrollment {
+interface IStringKey {
+  [key: string]: IStudent | ISession | IClassroom | string | undefined;
+}
+
+export interface IClassroomEnrollment extends IStringKey {
   [key: string]: any;
   _id?: string;
   student: IStudent;

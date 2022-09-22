@@ -2,7 +2,10 @@ import {IBoardingHouse} from './IBoardingHouse';
 import {ISession} from './ISession';
 import {IStudent} from './IStudent';
 
-export interface IBoardingEnrollment {
+interface IStringKey {
+  [key: string]: IStudent | ISession | IBoardingHouse | string | undefined;
+}
+export interface IBoardingEnrollment extends IStringKey {
   _id?: string;
   student: IStudent;
   session: ISession;

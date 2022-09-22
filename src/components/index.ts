@@ -12,6 +12,8 @@ import {InputSelect} from './InputSelect';
 import {Loading} from './Loading';
 import {RoomCard} from './RoomCard';
 import {EditFormRoomModal} from './EditFormRoomModal';
+import {EditBoardingHouseModal} from './EditBoardingHouseModal';
+import {Alert} from './Alert';
 
 export {
   Header,
@@ -28,4 +30,6 @@ export {
   Loading,
   RoomCard,
   EditFormRoomModal,
+  EditBoardingHouseModal,
+  Alert,
 };

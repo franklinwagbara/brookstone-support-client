@@ -197,6 +197,7 @@ const EditModal = ({open: openModal, enrollment, onClose}: IEditProps) => {
   const [classrooms, setClassrooms] = useState<IClassroom[] | null>(null);
   const [sessions, setSessions] = useState<ISession[] | null>(null);
   const [transcripts, setTranscripts] = useState<ITranscript[] | null>(null);
+  const dispatch = useAppDispatch();
   const [enrollmentInfo, setEnrollmentInfo] = useState<IEnrollment>({
     _id: enrollment._id,
     student: (enrollment?.student?.last_name +
@@ -250,60 +251,86 @@ const EditModal = ({open: openModal, enrollment, onClose}: IEditProps) => {
     useAddTranscriptMutation();
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    const enrollmentQuery: IEnrollmentRequest = {
-      _id: enrollmentInfo._id as string,
-      student: students?.find(
-        student =>
-          student.last_name + ', ' + student.first_name ===
-          (enrollmentInfo.student as any)
-      )?._id as any,
-      subject: subjects?.find(
-        subject => subject.name === (enrollmentInfo.subject as any)
-      )?._id as any,
-      session: sessions?.find(
-        session => session.session === (enrollmentInfo.session as any)
-      )?._id as any,
-      teacher: teachers?.find(
-        teacher =>
-          teacher.lastname + ', ' + teacher.firstname ===
-          (enrollmentInfo.teacher as any)
-      )?._id as any,
-      classroom: classrooms?.find(
-        classroom => classroom.name === (enrollmentInfo.classroom as any)
-      )?._id as any,
-    };
+    try {
+      const enrollmentQuery: IEnrollmentRequest = {
+        _id: enrollmentInfo._id as string,
+        student: students?.find(
+          student =>
+            student.last_name + ', ' + student.first_name ===
+            (enrollmentInfo.student as any)
+        )?._id as any,
+        subject: subjects?.find(
+          subject => subject.name === (enrollmentInfo.subject as any)
+        )?._id as any,
+        session: sessions?.find(
+          session => session.session === (enrollmentInfo.session as any)
+        )?._id as any,
+        teacher: teachers?.find(
+          teacher =>
+            teacher.lastname + ', ' + teacher.firstname ===
+            (enrollmentInfo.teacher as any)
+        )?._id as any,
+        classroom: classrooms?.find(
+          classroom => classroom.name === (enrollmentInfo.classroom as any)
+        )?._id as any,
+      };
 
-    let validTranscript = transcripts?.find(t => {
-      const tempT = {...t};
-      if (!t.classroom) {
-        tempT.classroom = classrooms?.find(
-          c => c.name === enrollmentQuery.classroom
-        ) as IClassroom;
+      let validTranscript = transcripts?.find(t => {
+        const tempT = {...t};
+        if (!t.classroom) {
+          tempT.classroom = classrooms?.find(
+            c => c.name === enrollmentQuery.classroom
+          ) as IClassroom;
+        }
+        tempT.classroom = classrooms
+          ? (classrooms[0] as IClassroom)
+          : ({} as IClassroom);
+
+        // if (
+        //   !tempT?.student?._id ||
+        //   !tempT?.subject?._id ||
+        //   !tempT?.session?._id ||
+        //   !tempT?.classroom?._id
+        // )
+        //   return false;
+
+        return (
+          tempT?.student._id === enrollmentQuery.student &&
+          tempT?.subject._id === enrollmentQuery.subject &&
+          tempT?.session._id === enrollmentQuery.session &&
+          tempT?.classroom._id === enrollmentQuery.classroom
+        );
+      });
+
+      if (!validTranscript) {
+        const addTranscriptResult = await addTranscript({
+          student: enrollmentQuery.student as any,
+          subject: enrollmentQuery.subject as any,
+          session: enrollmentQuery.session as any,
+          classroom: enrollmentQuery.classroom as any,
+          teacher: enrollmentQuery.teacher as any,
+        }).unwrap();
+        validTranscript = addTranscriptResult.data as ITranscript;
       }
-      tempT.classroom = classrooms
-        ? (classrooms[0] as IClassroom)
-        : ({} as IClassroom);
-      return (
-        tempT.student._id === enrollmentQuery.student &&
-        tempT.subject._id === enrollmentQuery.subject &&
-        tempT.session._id === enrollmentQuery.session &&
-        tempT.classroom._id === enrollmentQuery.classroom
+
+      enrollmentQuery.transcript = validTranscript._id;
+      await updateEnrollment(enrollmentQuery);
+      dispatch(
+        setAlert({
+          message: 'Edition was successfully!',
+          show: true,
+          type: AlertType.SUCCESS,
+        })
       );
-    });
-
-    if (!validTranscript) {
-      const addTranscriptResult = await addTranscript({
-        student: enrollmentQuery.student as any,
-        subject: enrollmentQuery.subject as any,
-        session: enrollmentQuery.session as any,
-        classroom: enrollmentQuery.classroom as any,
-        teacher: enrollmentQuery.teacher as any,
-      }).unwrap();
-      validTranscript = addTranscriptResult.data as ITranscript;
+    } catch (error) {
+      dispatch(
+        setAlert({
+          message: JSON.stringify(error),
+          show: true,
+          type: AlertType.ERROR,
+        })
+      );
     }
-
-    enrollmentQuery.transcript = validTranscript._id;
-    await updateEnrollment(enrollmentQuery);
     onClose();
   };
 
@@ -324,6 +351,24 @@ const EditModal = ({open: openModal, enrollment, onClose}: IEditProps) => {
       setTranscripts(
         (fetchedTranscripts as IResult<ITranscript>).data as ITranscript[]
       );
+
+    if (enrollment) {
+      setEnrollmentInfo({
+        _id: enrollment._id,
+        student: (enrollment?.student?.last_name +
+          ', ' +
+          enrollment?.student?.first_name) as any,
+        subject: enrollment?.subject?.name as any,
+        teacher: (enrollment?.teacher?.lastname +
+          ', ' +
+          enrollment?.teacher?.firstname) as any,
+        classroom: enrollment?.classroom?.name as any,
+        session: !enrollment?.session
+          ? ('' as any)
+          : (enrollment?.session?.session as any),
+        transcript: enrollment?.transcript._id as any,
+      });
+    }
   }, [
     fetchedStudents,
     fetchedSubjects,
@@ -331,6 +376,7 @@ const EditModal = ({open: openModal, enrollment, onClose}: IEditProps) => {
     fetchedClassrooms,
     fetchedSessions,
     fetchedTranscripts,
+    enrollment,
   ]);
 
   if (

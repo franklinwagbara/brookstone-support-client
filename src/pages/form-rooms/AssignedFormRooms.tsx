@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {RoomCard} from '../../components';
+import {Loading, RoomCard} from '../../components';
 import {useFetchClassroomsQuery} from '../../features/classroom/classroom_api_slice';
 import {useFetchClassroomEnrollmentsQuery} from '../../features/classroomEnrollment/classroomEnrollment_api_slice';
 import {IClassroom, IClassroomEnrollment} from '../../interfaces';
@@ -52,12 +52,15 @@ export const AssignedFormRooms = () => {
     }
   }, [fetchedClassroom, fetchedClassroomEnrollments]);
 
+  if (isLoadingClassroom || isLoadingClassroomEnrollments) {
+    return <Loading loading={true} />;
+  }
   return (
     <div
       id="main"
       className="basis-5/6 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
     >
-      {formRoom && (
+      {formRoom && classroomEnrollments && classroomEnrollments.length > 0 && (
         <RoomCard
           id={formRoom._id as string}
           class_name={formRoom.name}
@@ -68,6 +71,7 @@ export const AssignedFormRooms = () => {
           }
           population={classroomEnrollments?.length}
           onClick={() => handleRenderClassroom(formRoom._id)}
+          color="secondary"
         />
       )}
     </div>

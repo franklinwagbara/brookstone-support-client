@@ -6,6 +6,7 @@ interface CardProps {
   class_name: string;
   form_tutor: string;
   population?: number;
+  color?: 'primary' | 'secondary';
   onClick?: () => void;
 }
 
@@ -15,9 +16,13 @@ export const RoomCard = ({
   form_tutor,
   population,
   onClick,
+  color,
 }: CardProps) => {
   return (
-    <div className="card bg-gray-200" onClick={onClick}>
+    <div
+      className={`card ${color ? `bg-${color}` : 'bg-primary_light'}`}
+      onClick={onClick}
+    >
       <div>
         <h5>
           <span className="font-bold">Class: </span>

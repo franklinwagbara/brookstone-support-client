@@ -45,14 +45,17 @@ export const AssignedClasses = () => {
         Object.keys(classes).map(class_key => {
           return Object.keys(classes[class_key]).map(subject_key => {
             const enrollment = classes[class_key][subject_key][0];
-            console.log('cllslslsls', classes[enrollment.classroom._id]);
             return (
               <Card
                 key={subject_key}
                 id={subject_key}
                 class_name={enrollment.classroom.name}
                 subject_name={enrollment.subject.name}
-                teacher_name={enrollment.teacher.username}
+                teacher_name={
+                  enrollment.teacher.lastname +
+                  ', ' +
+                  enrollment.teacher.firstname
+                }
                 population={
                   classes[enrollment.classroom._id][enrollment.subject._id]
                     .length

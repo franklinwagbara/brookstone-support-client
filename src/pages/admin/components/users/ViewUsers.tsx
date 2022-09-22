@@ -17,6 +17,7 @@ import {
   useUpdateUserMutation,
 } from '../../../../features/user/user_api_slice';
 import {setUsers} from '../../../../features/user/user_slice';
+import {ROLES} from '../../../../globals/roles';
 import {IUser} from '../../../../interfaces';
 
 export const ViewUsers = (): JSX.Element => {
@@ -183,9 +184,17 @@ const EditModal = ({open: openModal, user, onClose}: IEditProps) => {
               setUserInfo({...userInfo, role: e.target.value as string})
             }
           >
-            <MenuItem value={'User'}>User</MenuItem>
-            <MenuItem value={'Admin'}>Admin</MenuItem>
-            <MenuItem value={'Teacher'}>Teacher</MenuItem>
+            <MenuItem value={ROLES.user}>User</MenuItem>
+            <MenuItem value={ROLES.admin}>Admin</MenuItem>
+            <MenuItem value={ROLES.teacher}>Teacher</MenuItem>
+            <MenuItem value={ROLES.form_tutor}>Form Tutor</MenuItem>
+            <MenuItem value={ROLES.form_tutor_and_teacher}>
+              Form Tutor / Teacher
+            </MenuItem>
+            <MenuItem value={ROLES.boarding_parent}>Boarding Parent</MenuItem>
+            <MenuItem value={ROLES.boarding_parent_and_teacher}>
+              Boarding Parent / Teacher
+            </MenuItem>
           </Select>
         </FormControl>
         <Button onClick={handleSubmit} variant="contained">

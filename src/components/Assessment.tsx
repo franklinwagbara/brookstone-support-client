@@ -1,7 +1,7 @@
 import './style.css';
 import {Button, CircularProgress, TextField} from '@mui/material';
 import React, {useEffect, useState} from 'react';
-import {useAppSelector} from '../app/hooks';
+import {useAppDispatch, useAppSelector} from '../app/hooks';
 import {useParams} from 'react-router-dom';
 import {IClasses, IEnrollment, ITranscript} from '../interfaces';
 import {
@@ -17,6 +17,8 @@ import {
   calculateGPA,
   calculateGrade,
 } from '../utils';
+import {setAlert} from '../features/alert/alert-slice';
+import {AlertType} from '../globals';
 
 interface IClassInfo {
   teacher: string;
@@ -63,6 +65,7 @@ for (let i = 0; i < 50; i++) {
 }
 
 export const Assessment = () => {
+  const dispatch = useAppDispatch();
   const classes = useAppSelector(state => state.classes.classes);
   const {class_id, subject_id} = useParams();
   const [classInfo, setClassInfo] = useState<IClassInfo>({} as IClassInfo);
@@ -142,41 +145,76 @@ export const Assessment = () => {
   };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    transcripts?.forEach(
-      async transcript =>
-        await updateTranscript({
-          _id: transcript._id as string,
-          teacher: transcript.teacher as any,
-          student: transcript.student as any,
-          subject: transcript.subject as any,
-          session: transcript.session as any,
-          classroom: transcript.classroom as any,
-          week_1: transcript.week_1 ? (transcript.week_1 as any) : ('' as any),
-          week_2: transcript.week_2 ? (transcript.week_2 as any) : ('' as any),
-          week_3: transcript.week_3 ? (transcript.week_3 as any) : ('' as any),
-          week_4: transcript.week_4 ? (transcript.week_4 as any) : ('' as any),
-          ca_1: transcript.ca_1 ? (transcript.ca_1 as any) : ('' as any),
-          half_term_exam: transcript.half_term_exam
-            ? (transcript.half_term_exam as any)
-            : ('' as any),
-          ccm: transcript.ccm ? (transcript.ccm as any) : ('' as any),
-          week_5: transcript.week_5 ? (transcript.week_5 as any) : ('' as any),
-          week_6: transcript.week_6 ? (transcript.week_6 as any) : ('' as any),
-          week_7: transcript.week_7 ? (transcript.week_7 as any) : ('' as any),
-          week_8: transcript.week_8 ? (transcript.week_8 as any) : ('' as any),
-          week_9: transcript.week_9 ? (transcript.week_9 as any) : ('' as any),
-          ca_2: transcript.ca_2 ? (transcript.ca_2 as any) : ('' as any),
-          final_exam: transcript.final_exam
-            ? (transcript.final_exam as any)
-            : ('' as any),
-          total: transcript.total ? (transcript.total as any) : ('' as any),
-          grade: transcript.grade ? (transcript.grade as string) : '',
-          gpa: transcript.gpa ? (transcript.gpa as any) : ('' as any),
-          comment: transcript.comment
-            ? (transcript.comment as any)
-            : ('' as any),
-        } as ITranscriptRequest)
-    );
+    try {
+      transcripts?.forEach(
+        async transcript =>
+          await updateTranscript({
+            _id: transcript._id as string,
+            teacher: transcript.teacher as any,
+            student: transcript.student as any,
+            subject: transcript.subject as any,
+            session: transcript.session as any,
+            classroom: transcript.classroom as any,
+            week_1: transcript.week_1
+              ? (transcript.week_1 as any)
+              : ('' as any),
+            week_2: transcript.week_2
+              ? (transcript.week_2 as any)
+              : ('' as any),
+            week_3: transcript.week_3
+              ? (transcript.week_3 as any)
+              : ('' as any),
+            week_4: transcript.week_4
+              ? (transcript.week_4 as any)
+              : ('' as any),
+            ca_1: transcript.ca_1 ? (transcript.ca_1 as any) : ('' as any),
+            half_term_exam: transcript.half_term_exam
+              ? (transcript.half_term_exam as any)
+              : ('' as any),
+            ccm: transcript.ccm ? (transcript.ccm as any) : ('' as any),
+            week_5: transcript.week_5
+              ? (transcript.week_5 as any)
+              : ('' as any),
+            week_6: transcript.week_6
+              ? (transcript.week_6 as any)
+              : ('' as any),
+            week_7: transcript.week_7
+              ? (transcript.week_7 as any)
+              : ('' as any),
+            week_8: transcript.week_8
+              ? (transcript.week_8 as any)
+              : ('' as any),
+            week_9: transcript.week_9
+              ? (transcript.week_9 as any)
+              : ('' as any),
+            ca_2: transcript.ca_2 ? (transcript.ca_2 as any) : ('' as any),
+            final_exam: transcript.final_exam
+              ? (transcript.final_exam as any)
+              : ('' as any),
+            total: transcript.total ? (transcript.total as any) : ('' as any),
+            grade: transcript.grade ? (transcript.grade as string) : '',
+            gpa: transcript.gpa ? (transcript.gpa as any) : ('' as any),
+            comment: transcript.comment
+              ? (transcript.comment as any)
+              : ('' as any),
+          } as ITranscriptRequest)
+      );
+      dispatch(
+        setAlert({
+          message: 'Assessment was submitted successfully!',
+          show: true,
+          type: AlertType.SUCCESS,
+        })
+      );
+    } catch (error) {
+      dispatch(
+        setAlert({
+          message: JSON.stringify(error),
+          show: true,
+          type: AlertType.ERROR,
+        })
+      );
+    }
   };
 
   useEffect(() => {
@@ -184,7 +222,11 @@ export const Assessment = () => {
     if (class_id && subject_id) {
       const classInfo: IClassInfo = {
         teacher:
-          classes[class_id as string][subject_id as string][0].teacher.username,
+          classes[class_id as string][subject_id as string][0].teacher
+            .lastname +
+          ', ' +
+          classes[class_id as string][subject_id as string][0].teacher
+            .firstname,
         teacher_id: classes[class_id as string][subject_id as string][0].teacher
           ._id as string,
         subject:

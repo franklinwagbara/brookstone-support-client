@@ -15,12 +15,10 @@ const Header = ({children}: HeaderProps) => {
   const dispatch = useAppDispatch();
 
   const handleLogin = (e: React.MouseEvent<HTMLDivElement>) => {
-    //e.preventDefault();
     navigate('/login');
   };
 
   const handleLogout = async (e: React.MouseEvent<HTMLDivElement>) => {
-    //e.preventDefault();
     await logout();
     dispatch(setCurrentUser(null));
   };

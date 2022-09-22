@@ -14,6 +14,11 @@ import {ManageClassroomEnrollments} from './pages/admin/ManageClassroomEnrollmen
 import {ManageClassrooms} from './pages/admin/ManageClassrooms';
 import {FormAssessment} from './pages/form-rooms/FormAssessment';
 import {FormList} from './pages/form-rooms/FormList';
+import {ManageBoardingHouses} from './pages/admin/ManageBoardingHouses';
+import {ManageBoardingEnrollments} from './pages/admin/ManageBoardingEnrollments';
+import {AssignedBoardingHouses} from './pages/boarding/AssignedBoardingHouses';
+import {HouseList} from './pages/boarding/HouseList';
+import {ManageYearGroups} from './pages/admin/ManageYearGroups';
 
 function App() {
   const currentUser = useAppSelector(state => state.auth.currentUser);
@@ -21,7 +26,11 @@ function App() {
     <div className="w-full min-w-fit h-full min-h-screen">
       <Header>
         <NavItems>
-          {currentUser && <NavItem>Welcome, {currentUser.username}!</NavItem>}
+          {currentUser && (
+            <NavItem>
+              Welcome, {currentUser.lastname + ', ' + currentUser.firstname}!
+            </NavItem>
+          )}
         </NavItems>
       </Header>
       <Routes>
@@ -29,6 +38,10 @@ function App() {
         <Route path="dashboard" element={<Dashboard />}>
           <Route path="assignedclasses" element={<AssignedClasses />} />
           <Route path="assignedformrooms" element={<AssignedFormRooms />} />
+          <Route
+            path="assignedboardinghouses"
+            element={<AssignedBoardingHouses />}
+          />
           <Route
             path="assessment/:class_id/:subject_id"
             element={<Assessment />}
@@ -48,7 +61,14 @@ function App() {
           <Route path="subjects" element={<ManageSubjects />} />
           <Route path="reports" element={<ManageReports />} />
           <Route path="classrooms" element={<ManageClassrooms />} />
+          <Route path="boardinghouses" element={<ManageBoardingHouses />} />
+          <Route path="yeargroups" element={<ManageYearGroups />} />
+          <Route
+            path="boardingenrollments"
+            element={<ManageBoardingEnrollments />}
+          />
           <Route path="formlist/:formroom_id" element={<FormList />} />
+          <Route path="houselist/:house_id" element={<HouseList />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

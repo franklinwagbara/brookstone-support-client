@@ -39,12 +39,13 @@ export const yearGroupApiSlice = createApi({
         providesTags: ['YearGroup'],
       }),
 
-      addYearGroup: builder.mutation<IResult<IYearGroup>, IYearGroup>({
-        query(student) {
+      addYearGroup: builder.mutation<IResult<IYearGroup>, IYearGroupRequest>({
+        query(arg) {
+          const body = _.pick(arg.body, ['year', 'session']);
           return {
             url: '/yearGroup',
             method: 'POST',
-            body: student,
+            body: body,
             credentials: 'include',
           };
         },

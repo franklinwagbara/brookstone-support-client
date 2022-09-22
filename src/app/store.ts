@@ -10,6 +10,8 @@ import classroomReducer from '../features/classroom/classroom_slice';
 import classroomEnrollmentReducer from '../features/classroomEnrollment/classroomEnrollment_slice';
 import alertReducer from '../features/alert/alert-slice';
 import behaviourReducer from '../features/behaviour/behaviour_slice';
+import boardingHouseReducer from '../features/boardingHouse/boardingHouse_slice';
+import boardingEnrollmentReducer from '../features/boardingEnrollment/boardingEnrollment_slice';
 import {authApiSlice} from '../features/auth/auth_api_slice';
 import {sessionApiSlice} from '../features/session/session_api_slice';
 import {enrollmentApiSlice} from '../features/enrollment/enrollment_api_slice';
@@ -21,6 +23,8 @@ import {subjectApiSlice} from '../features/subject/subject_api_slice';
 import {classroomApiSlice} from '../features/classroom/classroom_api_slice';
 import {classroomEnrollmentApiSlice} from '../features/classroomEnrollment/classroomEnrollment_api_slice';
 import {behaviourApiSlice} from '../features/behaviour/behaviour_api_slice';
+import {boardingHouseApiSlice} from '../features/boardingHouse/boardingHouse_api_slice';
+import {boardingEnrollmentApiSlice} from '../features/boardingEnrollment/boardingEnrollment_api_slice';
 
 export const store = configureStore({
   reducer: {
@@ -35,6 +39,8 @@ export const store = configureStore({
     classroomEnrollment: classroomEnrollmentReducer,
     alert: alertReducer,
     behaviour: behaviourReducer,
+    boardingHouse: boardingHouseReducer,
+    boardingEnrollment: boardingEnrollmentReducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
     [sessionApiSlice.reducerPath]: sessionApiSlice.reducer,
     [enrollmentApiSlice.reducerPath]: enrollmentApiSlice.reducer,
@@ -47,6 +53,9 @@ export const store = configureStore({
     [classroomEnrollmentApiSlice.reducerPath]:
       classroomEnrollmentApiSlice.reducer,
     [behaviourApiSlice.reducerPath]: behaviourApiSlice.reducer,
+    [boardingHouseApiSlice.reducerPath]: boardingHouseApiSlice.reducer,
+    [boardingEnrollmentApiSlice.reducerPath]:
+      boardingEnrollmentApiSlice.reducer,
   },
   middleware: getDefaultMiddleware => {
     return getDefaultMiddleware()
@@ -60,7 +69,9 @@ export const store = configureStore({
       .concat(subjectApiSlice.middleware)
       .concat(classroomApiSlice.middleware)
       .concat(classroomEnrollmentApiSlice.middleware)
-      .concat(behaviourApiSlice.middleware);
+      .concat(behaviourApiSlice.middleware)
+      .concat(boardingHouseApiSlice.middleware)
+      .concat(boardingEnrollmentApiSlice.middleware);
   },
 });
 

@@ -1,15 +1,13 @@
 import {Button} from '@mui/material';
 import React, {useEffect, useState} from 'react';
-import {useAppSelector} from '../../../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../../../app/hooks';
 import {InputSelect, Loading} from '../../../../components';
+import {setAlert} from '../../../../features/alert/alert-slice';
 import {
   useFetchClassroomsQuery,
   IClassroomRequest,
 } from '../../../../features/classroom/classroom_api_slice';
-import {
-  useAddEnrollmentMutation,
-  useUpdateEnrollmentMutation,
-} from '../../../../features/enrollment/enrollment_api_slice';
+import {useAddEnrollmentMutation} from '../../../../features/enrollment/enrollment_api_slice';
 import {useFetchSessionsQuery} from '../../../../features/session/session_api_slice';
 import {useFetchStudentsQuery} from '../../../../features/student/student_api_slice';
 import {useFetchSubjectsQuery} from '../../../../features/subject/subject_api_slice';
@@ -19,7 +17,7 @@ import {
   useAddTranscriptMutation,
 } from '../../../../features/transcript/transcript_api_slice';
 import {useFetchUsersQuery} from '../../../../features/user/user_api_slice';
-import {useFetchYearGroupsQuery} from '../../../../features/yearGroup/yearGroup_api_slice';
+import {AlertType} from '../../../../globals';
 import {
   IResult,
   IEnrollment,
@@ -49,6 +47,7 @@ export const AddEnrollment = () => {
   const [classrooms, setClassrooms] = useState<IClassroom[] | null>(null);
   const [sessions, setSessions] = useState<ISession[] | null>(null);
   const [transcripts, setTranscripts] = useState<ITranscript[] | null>(null);
+  const dispatch = useAppDispatch();
   const [enrollmentInfo, setEnrollmentInfo] = useState<IEnrollment>({
     student: '' as any,
     subject: '' as any,
@@ -119,9 +118,16 @@ export const AddEnrollment = () => {
       transcript: '' as any,
     };
 
-    console.log('transcripts', transcripts);
     let validTranscript = transcripts?.find((t, i) => {
       console.log(i, t);
+      if (
+        !t.student?._id ||
+        !t.subject?._id ||
+        !t.session?._id ||
+        !t.classroom?._id
+      )
+        return false;
+
       return (
         t.student._id === (_enrollmentInfo.student as any) &&
         t.subject._id === (_enrollmentInfo.subject as any) &&
@@ -131,7 +137,6 @@ export const AddEnrollment = () => {
     });
 
     if (!validTranscript) {
-      console.log('inside valid transcript');
       const addTranscriptResult = await addTranscript({
         student: _enrollmentInfo.student as any,
         subject: _enrollmentInfo.subject as any,
@@ -143,7 +148,27 @@ export const AddEnrollment = () => {
     }
 
     _enrollmentInfo.transcript = validTranscript._id as any;
-    await addEnrollment(_enrollmentInfo);
+    await addEnrollment(_enrollmentInfo)
+      .unwrap()
+      .then(payload =>
+        dispatch(
+          setAlert({
+            message: 'Enrollment was created successfully!',
+            show: true,
+            type: AlertType.SUCCESS,
+          })
+        )
+      )
+      .catch(error =>
+        dispatch(
+          setAlert({
+            message: JSON.stringify(error),
+            show: true,
+            type: AlertType.ERROR,
+          })
+        )
+      );
+    setEnrollmentInfo({...initialEnrollmentState});
   };
 
   useEffect(() => {

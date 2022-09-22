@@ -170,7 +170,7 @@ const EditModal = ({open: openModal, student, onClose}: IEditProps) => {
     ...student,
     session: student.session._id as any,
     year_group: student.year_group.year as any,
-    classroom: student.classroom.name as any,
+    classroom: student?.classroom?.name as any,
     dob: student.dob as any,
   });
   const [yearGroups, setYearGroups] = useState<IYearGroup[] | null>(null);
@@ -217,11 +217,19 @@ const EditModal = ({open: openModal, student, onClose}: IEditProps) => {
         (fetchedClassrooms as IResult<IClassroom>).data as IClassroom[]
       );
     }
-  }, [fetchedYearGroups, fetchedClassrooms]);
+
+    setStudentInfo({
+      ...student,
+      session: student.session._id as any,
+      year_group: student.year_group.year as any,
+      classroom: student?.classroom?.name as any,
+      dob: student.dob as any,
+    });
+  }, [fetchedYearGroups, fetchedClassrooms, student]);
 
   return (
     <Modal open={openModal} onClose={onClose}>
-      <form className="flex flex-col flex-1 gap-4 m-auto w-96 h-fit p-4 bg-background translate-y-1/4">
+      <form className="flex flex-col flex-1 gap-4 m-auto w-96 h-fit p-4 bg-background translate-y-2">
         <TextField
           value={studentInfo.first_name}
           label="First Name"

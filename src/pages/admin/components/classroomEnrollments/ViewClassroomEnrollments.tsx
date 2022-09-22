@@ -105,7 +105,6 @@ const ClassroomEnrollmentTable = ({
     setOpenModal(prev => !prev);
   };
 
-  console.log('Enrollmentsssss', enrollments);
   return (
     <>
       {selectedEnrollment && (
@@ -241,6 +240,8 @@ const EditModal = ({open: openModal, enrollment, onClose}: IEditProps) => {
         classroom => classroom.name === (enrollmentInfo.classroom as any)
       )?._id as any,
     };
+    console.log('enrollment query', enrollmentQuery, classrooms);
+
     await updateEnrollment(enrollmentQuery);
     onClose();
   };

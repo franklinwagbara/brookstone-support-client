@@ -3,7 +3,18 @@ import {IStudent} from './IStudent';
 import {IUser} from './IUser';
 import {IYearGroup} from './IYearGroup';
 
-export interface IClassroom {
+interface IStringKey {
+  [key: string]:
+    | IStudent
+    | IStudent[]
+    | ISession
+    | IUser
+    | IYearGroup
+    | string
+    | undefined;
+}
+
+export interface IClassroom extends IStringKey {
   _id: string;
   name: string;
   form_tutor: IUser;

@@ -1,10 +1,12 @@
 import {TextField, FormControl, Button} from '@mui/material';
 import React, {useEffect, useState} from 'react';
-import {useAppSelector} from '../../../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../../../app/hooks';
 import {InputSelect, Loading} from '../../../../components';
+import {setAlert} from '../../../../features/alert/alert-slice';
 import {useFetchClassroomsQuery} from '../../../../features/classroom/classroom_api_slice';
 import {useAddStudentMutation} from '../../../../features/student/student_api_slice';
 import {useFetchYearGroupsQuery} from '../../../../features/yearGroup/yearGroup_api_slice';
+import {AlertType} from '../../../../globals';
 import {
   IClassroom,
   IResult,
@@ -30,6 +32,7 @@ export const AddStudent = () => {
   const [addStudent, {isLoading: isLoadingStudent}] = useAddStudentMutation();
   const [classrooms, setClassrooms] = useState<IClassroom[] | null>(null);
   const currentSession = useAppSelector(state => state.session.currentSession);
+  const dispatch = useAppDispatch();
   const {
     data: yearGroupsFetchRes,
     isLoading: isLoadingYG,
@@ -48,8 +51,31 @@ export const AddStudent = () => {
       year_group: yearGroups?.find(
         yg => yg.year === (studentInfo.year_group as unknown as string)
       )?._id as any,
+      classroom: classrooms?.find(
+        c => c.name === (studentInfo.classroom as unknown as string)
+      )?._id as any,
     };
-    await addStudent(_studentInfo);
+    await addStudent(_studentInfo)
+      .unwrap()
+      .then(payload =>
+        dispatch(
+          setAlert({
+            message: 'Student record was created successfully!',
+            show: true,
+            type: AlertType.SUCCESS,
+          })
+        )
+      )
+      .catch(error =>
+        dispatch(
+          setAlert({
+            message: JSON.stringify(error),
+            show: true,
+            type: AlertType.ERROR,
+          })
+        )
+      );
+    setStudentInfo({...initialStudentState});
   };
 
   useEffect(() => {

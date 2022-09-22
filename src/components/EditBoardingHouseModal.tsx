@@ -1,6 +1,6 @@
 import {Modal, TextField, Button} from '@mui/material';
 import {useState, useEffect} from 'react';
-import {IBehaviour, IClassroomEnrollment} from '../interfaces';
+import {IBehaviour, IBoardingEnrollment} from '../interfaces';
 import {InputSelect} from './InputSelect';
 import {AlertType, WEEKS} from '../globals/constants';
 import {WEEKS_MAPPER, RATINGS} from '../globals/constants';
@@ -15,8 +15,8 @@ import {setAlert} from '../features/alert/alert-slice';
 
 interface IEditProps {
   open: boolean;
-  enrollment: IClassroomEnrollment;
-  onSubmit: (formRoomInfo: IClassroomEnrollment) => void;
+  enrollment: IBoardingEnrollment;
+  onSubmit: (boardingHouseInfo: IBoardingEnrollment) => void;
   onClose: () => void;
 }
 
@@ -35,21 +35,22 @@ const initialBehaviour = {
   completion_of_extended_learning: '' as any,
   organizational_skills: '' as any,
   obedience_to_pastoral_rules_and_regulations: '' as any,
-  cooperation_with_support_teachers: '' as any,
   cooperation_with_boarding_parents: '' as any,
+  cooperation_with_support_teachers: '' as any,
   ability_to_concentrate_during_prep: '' as any,
   punctuality: '' as any,
 } as IBehaviour;
 
-export const EditFormRoomModal = ({
+export const EditBoardingHouseModal = ({
   open: openModal,
   enrollment,
   onSubmit,
   onClose,
 }: IEditProps) => {
-  const [formRoomInfo, setFormRoomInfo] = useState<IClassroomEnrollment>({
-    ...enrollment,
-  });
+  const [boardingHouseInfo, setBoardingHouseInfo] =
+    useState<IBoardingEnrollment>({
+      ...enrollment,
+    });
   const [week, setWeek] = useState<string>('1');
   const [behaviour, setBehaviour] = useState<IBehaviour>(initialBehaviour);
 
@@ -92,35 +93,28 @@ export const EditFormRoomModal = ({
       tempBe.student = _behaviour.student._id as any;
       tempBe.session = _behaviour.session._id as any;
       tempBe.week = _behaviour.week as any;
-      tempBe.active_participation_and_composure_during_lessons =
-        (_behaviour.active_participation_and_composure_during_lessons as any) ||
+      tempBe.completion_of_extended_learning =
+        (_behaviour.completion_of_extended_learning as any) || ('' as any);
+      tempBe.organizational_skills =
+        (_behaviour.organizational_skills as any) || ('' as any);
+      tempBe.obedience_to_pastoral_rules_and_regulations =
+        (_behaviour.obedience_to_pastoral_rules_and_regulations as any) ||
         ('' as any);
-      tempBe.ownership_of_learning =
-        (_behaviour.ownership_of_learning as any) || ('' as any);
-      tempBe.punctuality_and_attendance_to_lessons =
-        (_behaviour.punctuality_and_attendance_to_lessons as any) ||
-        ('' as any);
-      tempBe.motivation_and_value_for_academic_success =
-        (_behaviour.motivation_and_value_for_academic_success as any) ||
-        ('' as any);
-      tempBe.self_confidence_towards_academic_work =
-        (_behaviour.self_confidence_towards_academic_work as any) ||
-        ('' as any);
-      tempBe.effective_use_of_study_skills =
-        (_behaviour.effective_use_of_study_skills as any) || ('' as any);
-      tempBe.Assessed_extended_learning =
-        (_behaviour.Assessed_extended_learning as any) || ('' as any);
-
+      tempBe.cooperation_with_support_teachers =
+        (_behaviour.cooperation_with_support_teachers as any) || ('' as any);
+      tempBe.cooperation_with_boarding_parents =
+        (_behaviour.cooperation_with_boarding_parents as any) || ('' as any);
+      tempBe.ability_to_concentrate_during_prep =
+        (_behaviour.ability_to_concentrate_during_prep as any) || ('' as any);
+      tempBe.punctuality = (_behaviour.punctuality as any) || ('' as any);
       setBehaviour(tempBe);
     } else {
       setBehaviour({...initialBehaviour});
     }
   }, [fetchedBehaviours, enrollment, week]);
 
-  console.log('hevaiou', behaviour);
   const handleSubmit = async () => {
-    console.log('handle sumibt', behaviour);
-    onSubmit(formRoomInfo);
+    onSubmit(boardingHouseInfo);
     if (behaviour.student && behaviour.session) {
       const _tempBe = {
         ...behaviour,
@@ -172,13 +166,15 @@ export const EditFormRoomModal = ({
         />
 
         <TextField
-          value={formRoomInfo[WEEKS_MAPPER[week] as unknown as any] || ''}
+          value={
+            boardingHouseInfo[WEEKS_MAPPER[week] as unknown as string] || ''
+          }
           label="Form Tutor's Comment"
           multiline
           minRows={5}
           onChange={e =>
-            setFormRoomInfo({
-              ...formRoomInfo,
+            setBoardingHouseInfo({
+              ...boardingHouseInfo,
               [WEEKS_MAPPER[week]]: e.target.value as string,
             })
           }
@@ -197,20 +193,17 @@ export const EditFormRoomModal = ({
           <tbody>
             <tr className="table-tr-behaviour">
               <td className="bg-gray-200 px-2">
-                Active participation and composure during lessons
+                Completion of extended learning
               </td>
               <td>
                 <InputSelect
                   label="Rating"
                   size="small"
-                  value={
-                    behaviour.active_participation_and_composure_during_lessons
-                  }
+                  value={behaviour.completion_of_extended_learning}
                   onChange={e =>
                     setBehaviour(prev => ({
                       ...prev,
-                      active_participation_and_composure_during_lessons: e
-                        .target.value as any,
+                      completion_of_extended_learning: e.target.value as any,
                     }))
                   }
                   selectionList={RATINGS}
@@ -218,16 +211,16 @@ export const EditFormRoomModal = ({
               </td>
             </tr>
             <tr className="table-tr-behaviour">
-              <td className="bg-gray-200 px-2">Ownership of learning </td>
+              <td className="bg-gray-200 px-2">Organizational skills </td>
               <td>
                 <InputSelect
                   label="Rating"
                   size="small"
-                  value={behaviour.ownership_of_learning}
+                  value={behaviour.organizational_skills}
                   onChange={e =>
                     setBehaviour(prev => ({
                       ...prev,
-                      ownership_of_learning: e.target.value as any,
+                      organizational_skills: e.target.value as any,
                     }))
                   }
                   selectionList={RATINGS}
@@ -236,17 +229,17 @@ export const EditFormRoomModal = ({
             </tr>
             <tr className="table-tr-behaviour">
               <td className="bg-gray-200 px-2">
-                Punctuality and attendance to lessons
+                Obedience to pastoral rules and regulations
               </td>
               <td>
                 <InputSelect
                   label="Rating"
                   size="small"
-                  value={behaviour.punctuality_and_attendance_to_lessons}
+                  value={behaviour.obedience_to_pastoral_rules_and_regulations}
                   onChange={e =>
                     setBehaviour(prev => ({
                       ...prev,
-                      punctuality_and_attendance_to_lessons: e.target
+                      obedience_to_pastoral_rules_and_regulations: e.target
                         .value as any,
                     }))
                   }
@@ -256,18 +249,17 @@ export const EditFormRoomModal = ({
             </tr>
             <tr className="table-tr-behaviour">
               <td className="bg-gray-200 px-2">
-                Motivation and value for academic success
+                Cooperation with support teachers
               </td>
               <td>
                 <InputSelect
                   label="Rating"
                   size="small"
-                  value={behaviour.motivation_and_value_for_academic_success}
+                  value={behaviour.cooperation_with_support_teachers}
                   onChange={e =>
                     setBehaviour(prev => ({
                       ...prev,
-                      motivation_and_value_for_academic_success: e.target
-                        .value as any,
+                      cooperation_with_support_teachers: e.target.value as any,
                     }))
                   }
                   selectionList={RATINGS}
@@ -276,18 +268,17 @@ export const EditFormRoomModal = ({
             </tr>
             <tr className="table-tr-behaviour">
               <td className="bg-gray-200 px-2">
-                Self-confidence towards academic work
+                Ability to concentrate during prep
               </td>
               <td>
                 <InputSelect
                   label="Rating"
                   size="small"
-                  value={behaviour.self_confidence_towards_academic_work}
+                  value={behaviour.ability_to_concentrate_during_prep}
                   onChange={e =>
                     setBehaviour(prev => ({
                       ...prev,
-                      self_confidence_towards_academic_work: e.target
-                        .value as any,
+                      ability_to_concentrate_during_prep: e.target.value as any,
                     }))
                   }
                   selectionList={RATINGS}
@@ -295,35 +286,16 @@ export const EditFormRoomModal = ({
               </td>
             </tr>
             <tr className="table-tr-behaviour">
-              <td className="bg-gray-200 px-2">
-                Effective use of study skills
-              </td>
+              <td className="bg-gray-200 px-2">Punctuality</td>
               <td>
                 <InputSelect
                   label="Rating"
                   size="small"
-                  value={behaviour.effective_use_of_study_skills}
+                  value={behaviour.punctuality}
                   onChange={e =>
                     setBehaviour(prev => ({
                       ...prev,
-                      effective_use_of_study_skills: e.target.value as any,
-                    }))
-                  }
-                  selectionList={RATINGS}
-                />
-              </td>
-            </tr>
-            <tr className="table-tr-behaviour">
-              <td className="bg-gray-200 px-2">Assessed extended learning </td>
-              <td>
-                <InputSelect
-                  label="Rating"
-                  size="small"
-                  value={behaviour.Assessed_extended_learning}
-                  onChange={e =>
-                    setBehaviour(prev => ({
-                      ...prev,
-                      Assessed_extended_learning: e.target.value as any,
+                      punctuality: e.target.value as any,
                     }))
                   }
                   selectionList={RATINGS}
