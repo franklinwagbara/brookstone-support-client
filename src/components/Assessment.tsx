@@ -268,6 +268,7 @@ export const Assessment = () => {
       </div>
     );
 
+  console.log('Re-rending assessment');
   return (
     <div className="relative w-full">
       <div id="basic_info" className="basic_info ">

@@ -1,4 +1,4 @@
-import {Button, CircularProgress, Modal} from '@mui/material';
+import {Button, CircularProgress, Modal, TextField} from '@mui/material';
 import {useEffect, useState} from 'react';
 import {useAppDispatch, useAppSelector} from '../../../../app/hooks';
 import {InputSelect} from '../../../../components';
@@ -125,42 +125,45 @@ const BoardingHouseTable = ({
 
         <tbody>
           {boardingHouses &&
-            boardingHouses.map((boardingHouse, index) => (
-              <tr key={boardingHouse._id as string}>
-                <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
-                  {index + 1}
-                </td>
-                <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
-                  {boardingHouse.name}
-                </td>
-                <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
-                  {boardingHouse.boarding_parent.lastname +
-                    ', ' +
-                    boardingHouse.boarding_parent.firstname}
-                </td>
-                <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
-                  {boardingHouse.year_group.year}
-                </td>
-                <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
-                  <Button
-                    onClick={() => handleEdit(boardingHouse)}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Edit
-                  </Button>
-                </td>
-                <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
-                  <Button
-                    onClick={() => onDelete(boardingHouse._id as string)}
-                    variant="contained"
-                    color="secondary"
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
+            boardingHouses.map((boardingHouse, index) => {
+              console.log('inspecting', boardingHouse);
+              return (
+                <tr key={boardingHouse?._id as string}>
+                  <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
+                    {index + 1}
+                  </td>
+                  <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
+                    {boardingHouse?.name}
+                  </td>
+                  <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
+                    {boardingHouse?.boarding_parent?.lastname +
+                      ', ' +
+                      boardingHouse?.boarding_parent?.firstname}
+                  </td>
+                  <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
+                    {boardingHouse?.year_group?.year}
+                  </td>
+                  <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
+                    <Button
+                      onClick={() => handleEdit(boardingHouse)}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Edit
+                    </Button>
+                  </td>
+                  <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
+                    <Button
+                      onClick={() => onDelete(boardingHouse?._id as string)}
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </>
@@ -177,10 +180,10 @@ const EditModal = ({open: openModal, boardingHouse, onClose}: IEditProps) => {
   const currentSession = useAppSelector(state => state.session.currentSession);
   const [boardingHouseInfo, setBoardingHouseInfo] = useState<IBoardingHouse>({
     ...boardingHouse,
-    name: boardingHouse.name as string,
-    boarding_parent: (boardingHouse.boarding_parent.lastname +
+    name: boardingHouse?.name as string,
+    boarding_parent: (boardingHouse?.boarding_parent?.lastname +
       ', ' +
-      boardingHouse.boarding_parent.firstname) as any,
+      boardingHouse?.boarding_parent?.firstname) as any,
     session: currentSession?.session as any,
   });
   const [yearGroups, setYearGroups] = useState<IYearGroup[] | null>(null);
@@ -209,17 +212,16 @@ const EditModal = ({open: openModal, boardingHouse, onClose}: IEditProps) => {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     await updateBoardingHouse({
       _id: boardingHouseInfo._id as string,
-      name: boardingHouseInfo.name,
-      boarding_parent: boardingHouses?.find(
-        c =>
-          c.boarding_parent.lastname + ', ' + c.boarding_parent.firstname ===
+      name: boardingHouseInfo?.name as string,
+      boarding_parent: users?.find(
+        user =>
+          user.lastname + ', ' + user.firstname ===
           (boardingHouseInfo.boarding_parent as unknown as string)
       )?._id as any,
       session: currentSession?._id as any,
-      year_group: boardingHouses?.find(
-        c =>
-          c.year_group.year ===
-          (boardingHouseInfo.year_group as unknown as string)
+      year_group: yearGroups?.find(
+        year =>
+          year.year === (boardingHouseInfo.year_group as unknown as string)
       )?._id as any,
       section: boardingHouseInfo.section as any,
     });
@@ -246,26 +248,20 @@ const EditModal = ({open: openModal, boardingHouse, onClose}: IEditProps) => {
   return (
     <Modal open={openModal} onClose={onClose}>
       <form className="flex flex-col flex-1 gap-4 m-auto w-96 h-fit p-4 bg-background translate-y-1/4">
-        <InputSelect
-          label="Form Room"
+        <TextField
           value={boardingHouseInfo.name}
+          label="Boarding House"
           onChange={e =>
             setBoardingHouseInfo({
               ...boardingHouseInfo,
               name: (e.target as HTMLInputElement).value as string as any,
             })
           }
-          selectionList={
-            fetchedBoardingHouses?.data
-              ? (fetchedBoardingHouses?.data as IBoardingHouse[]).map(
-                  classroom => classroom.name
-                )
-              : ['']
-          }
+          required
         />
 
         <InputSelect
-          label="Form Tutor"
+          label="Boarding Parent"
           value={boardingHouseInfo.boarding_parent}
           onChange={e =>
             setBoardingHouseInfo({

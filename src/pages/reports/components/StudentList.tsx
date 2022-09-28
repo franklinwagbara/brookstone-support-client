@@ -71,7 +71,7 @@ export const StudentList = ({students}: StudentListProps): JSX.Element => {
         <tbody>
           {students &&
             students.map((student, index) => (
-              <tr key={student._id as string}>
+              <tr key={(student._id as string) + index}>
                 <td className="bg-gray-300 px-3 text-center py-2 whitespace-nowrap">
                   {index + 1}
                 </td>
@@ -218,6 +218,8 @@ export const ReportSheet = ({
     onClose();
   };
 
+  console.log('Behaviours', behaviours);
+
   useEffect(() => {
     if (isSuccesEnrollments) {
       setEnrollments(
@@ -258,7 +260,11 @@ export const ReportSheet = ({
     week,
   ]);
 
-  if (isLoadingEnrollments)
+  if (
+    isLoadingEnrollments ||
+    isLoadingClassroomEnrollments ||
+    isLoadingBehaviours
+  )
     return (
       <div className="flex items-center justify-center w-full h-screen">
         <CircularProgress size={200} color="secondary" />
@@ -420,472 +426,474 @@ export const ReportSheet = ({
                 <caption className="font-bold text-start">
                   SECTION B: FORM TUTOR’S ASSESSMENT OF STUDENT’S BEHAVIOUR
                 </caption>
-                <tr>
-                  <td rowSpan={1}></td>
-                  <th
-                    colSpan={5}
-                    scope="colgroup"
-                    className="border border-black w-52"
-                  >
-                    <span>RATING</span>
-                  </th>
-                </tr>
-                <tr>
-                  <th scope="row" className="border border-black text-start">
-                    CRITERIA
-                  </th>
-                  <th scope="col" className="border border-black">
-                    5
-                  </th>
-                  <th scope="col" className="border border-black">
-                    4
-                  </th>
-                  <th scope="col" className="border border-black">
-                    3
-                  </th>
-                  <th scope="col" className="border border-black">
-                    2
-                  </th>
-                  <th scope="col" className="border border-black">
-                    1
-                  </th>
-                </tr>
-                <tr>
-                  <th
-                    scope="row"
-                    className="border border-black px-2 text-start"
-                  >
-                    Active participation and composure during lessions
-                  </th>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.active_participation_and_composure_during_lessons as string
-                    ) === 5 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.active_participation_and_composure_during_lessons as string
-                    ) === 4 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.active_participation_and_composure_during_lessons as string
-                    ) === 3 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.active_participation_and_composure_during_lessons as string
-                    ) === 2 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.active_participation_and_composure_during_lessons as string
-                    ) === 1 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <th
-                    scope="row"
-                    className="border border-black px-2 text-start w-100"
-                  >
-                    Ownership of learning
-                  </th>
-                  <td className="border border-black text-center">
-                    {parseInt(behaviour?.ownership_of_learning as string) ===
-                    5 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(behaviour?.ownership_of_learning as string) ===
-                    4 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(behaviour?.ownership_of_learning as string) ===
-                    3 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(behaviour?.ownership_of_learning as string) ===
-                    2 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(behaviour?.ownership_of_learning as string) ===
-                    1 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <th
-                    scope="row"
-                    className="border border-black px-2 text-start w-100"
-                  >
-                    Punctuality and attendance to lessons
-                  </th>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.punctuality_and_attendance_to_lessons as string
-                    ) === 5 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.punctuality_and_attendance_to_lessons as string
-                    ) === 4 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.punctuality_and_attendance_to_lessons as string
-                    ) === 3 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.punctuality_and_attendance_to_lessons as string
-                    ) === 2 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.punctuality_and_attendance_to_lessons as string
-                    ) === 1 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <th
-                    scope="row"
-                    className="border border-black px-2 text-start w-100"
-                  >
-                    Motivation and value for academic success
-                  </th>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.motivation_and_value_for_academic_success as string
-                    ) === 5 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.motivation_and_value_for_academic_success as string
-                    ) === 4 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.motivation_and_value_for_academic_success as string
-                    ) === 3 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.motivation_and_value_for_academic_success as string
-                    ) === 2 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.motivation_and_value_for_academic_success as string
-                    ) === 1 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <th
-                    scope="row"
-                    className="border border-black px-2 text-start w-100"
-                  >
-                    Self-confidence towards academic work
-                  </th>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.self_confidence_towards_academic_work as string
-                    ) === 5 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.self_confidence_towards_academic_work as string
-                    ) === 4 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.self_confidence_towards_academic_work as string
-                    ) === 3 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.self_confidence_towards_academic_work as string
-                    ) === 2 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.self_confidence_towards_academic_work as string
-                    ) === 1 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <th
-                    scope="row"
-                    className="border border-black px-2 text-start w-100"
-                  >
-                    Effective use of study skills
-                  </th>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.effective_use_of_study_skills as string
-                    ) === 5 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.effective_use_of_study_skills as string
-                    ) === 4 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.effective_use_of_study_skills as string
-                    ) === 3 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.effective_use_of_study_skills as string
-                    ) === 2 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.effective_use_of_study_skills as string
-                    ) === 1 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <th
-                    scope="row"
-                    className="border border-black px-2 text-start w-100"
-                  >
-                    Assessed extended learning
-                  </th>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.Assessed_extended_learning as string
-                    ) === 5 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.Assessed_extended_learning as string
-                    ) === 4 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.Assessed_extended_learning as string
-                    ) === 3 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.Assessed_extended_learning as string
-                    ) === 2 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                  <td className="border border-black text-center">
-                    {parseInt(
-                      behaviour?.Assessed_extended_learning as string
-                    ) === 1 ? (
-                      <div className="w-2 mx-auto">
-                        <GiCheckMark />
-                      </div>
-                    ) : (
-                      ''
-                    )}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td rowSpan={1}></td>
+                    <th
+                      colSpan={5}
+                      scope="colgroup"
+                      className="border border-black w-52"
+                    >
+                      <span>RATING</span>
+                    </th>
+                  </tr>
+                  <tr>
+                    <th scope="row" className="border border-black text-start">
+                      CRITERIA
+                    </th>
+                    <th scope="col" className="border border-black">
+                      5
+                    </th>
+                    <th scope="col" className="border border-black">
+                      4
+                    </th>
+                    <th scope="col" className="border border-black">
+                      3
+                    </th>
+                    <th scope="col" className="border border-black">
+                      2
+                    </th>
+                    <th scope="col" className="border border-black">
+                      1
+                    </th>
+                  </tr>
+                  <tr>
+                    <th
+                      scope="row"
+                      className="border border-black px-2 text-start"
+                    >
+                      Active participation and composure during lessions
+                    </th>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.active_participation_and_composure_during_lessons as string
+                      ) === 5 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.active_participation_and_composure_during_lessons as string
+                      ) === 4 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.active_participation_and_composure_during_lessons as string
+                      ) === 3 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.active_participation_and_composure_during_lessons as string
+                      ) === 2 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.active_participation_and_composure_during_lessons as string
+                      ) === 1 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th
+                      scope="row"
+                      className="border border-black px-2 text-start w-100"
+                    >
+                      Ownership of learning
+                    </th>
+                    <td className="border border-black text-center">
+                      {parseInt(behaviour?.ownership_of_learning as string) ===
+                      5 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(behaviour?.ownership_of_learning as string) ===
+                      4 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(behaviour?.ownership_of_learning as string) ===
+                      3 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(behaviour?.ownership_of_learning as string) ===
+                      2 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(behaviour?.ownership_of_learning as string) ===
+                      1 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th
+                      scope="row"
+                      className="border border-black px-2 text-start w-100"
+                    >
+                      Punctuality and attendance to lessons
+                    </th>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.punctuality_and_attendance_to_lessons as string
+                      ) === 5 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.punctuality_and_attendance_to_lessons as string
+                      ) === 4 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.punctuality_and_attendance_to_lessons as string
+                      ) === 3 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.punctuality_and_attendance_to_lessons as string
+                      ) === 2 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.punctuality_and_attendance_to_lessons as string
+                      ) === 1 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th
+                      scope="row"
+                      className="border border-black px-2 text-start w-100"
+                    >
+                      Motivation and value for academic success
+                    </th>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.motivation_and_value_for_academic_success as string
+                      ) === 5 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.motivation_and_value_for_academic_success as string
+                      ) === 4 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.motivation_and_value_for_academic_success as string
+                      ) === 3 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.motivation_and_value_for_academic_success as string
+                      ) === 2 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.motivation_and_value_for_academic_success as string
+                      ) === 1 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th
+                      scope="row"
+                      className="border border-black px-2 text-start w-100"
+                    >
+                      Self-confidence towards academic work
+                    </th>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.self_confidence_towards_academic_work as string
+                      ) === 5 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.self_confidence_towards_academic_work as string
+                      ) === 4 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.self_confidence_towards_academic_work as string
+                      ) === 3 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.self_confidence_towards_academic_work as string
+                      ) === 2 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.self_confidence_towards_academic_work as string
+                      ) === 1 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th
+                      scope="row"
+                      className="border border-black px-2 text-start w-100"
+                    >
+                      Effective use of study skills
+                    </th>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.effective_use_of_study_skills as string
+                      ) === 5 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.effective_use_of_study_skills as string
+                      ) === 4 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.effective_use_of_study_skills as string
+                      ) === 3 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.effective_use_of_study_skills as string
+                      ) === 2 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.effective_use_of_study_skills as string
+                      ) === 1 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th
+                      scope="row"
+                      className="border border-black px-2 text-start w-100"
+                    >
+                      Assessed extended learning
+                    </th>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.Assessed_extended_learning as string
+                      ) === 5 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.Assessed_extended_learning as string
+                      ) === 4 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.Assessed_extended_learning as string
+                      ) === 3 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.Assessed_extended_learning as string
+                      ) === 2 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="border border-black text-center">
+                      {parseInt(
+                        behaviour?.Assessed_extended_learning as string
+                      ) === 1 ? (
+                        <div className="w-2 mx-auto">
+                          <GiCheckMark />
+                        </div>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
               <div
                 id="form-tutor-comment"
