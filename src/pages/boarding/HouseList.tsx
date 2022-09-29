@@ -44,7 +44,7 @@ export const HouseList = (): JSX.Element => {
   ] = useUpdateBoardingEnrollmentMutation();
 
   const handleAssessment = (enrollment: IBoardingEnrollment) => {
-    setSelectedEnrollment(enrollment);
+    setSelectedEnrollment({...enrollment});
     setOpenModal(prev => !prev);
   };
 

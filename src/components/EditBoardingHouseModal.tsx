@@ -111,6 +111,10 @@ export const EditBoardingHouseModal = ({
     } else {
       setBehaviour({...initialBehaviour});
     }
+
+    if (enrollment) {
+      setBoardingHouseInfo({...enrollment});
+    }
   }, [fetchedBehaviours, enrollment, week]);
 
   const handleSubmit = async () => {
@@ -249,17 +253,17 @@ export const EditBoardingHouseModal = ({
             </tr>
             <tr className="table-tr-behaviour">
               <td className="bg-gray-200 px-2">
-                Cooperation with support teachers
+                Cooperation with boarding Parents
               </td>
               <td>
                 <InputSelect
                   label="Rating"
                   size="small"
-                  value={behaviour.cooperation_with_support_teachers}
+                  value={behaviour.cooperation_with_boarding_parents}
                   onChange={e =>
                     setBehaviour(prev => ({
                       ...prev,
-                      cooperation_with_support_teachers: e.target.value as any,
+                      cooperation_with_boarding_parents: e.target.value as any,
                     }))
                   }
                   selectionList={RATINGS}
